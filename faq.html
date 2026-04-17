@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — FAQ</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .faq-hero { background:linear-gradient(135deg,var(--primary),var(--primary-dark));padding:36px 24px 28px;color:#fff;text-align:center; }
+    .faq-hero h1 { font-size:1.6rem;font-weight:900;margin-bottom:6px; }
+    .faq-hero p { font-size:.88rem;opacity:.85; }
+    .faq-search { margin:16px 24px 0;position:relative; }
+    .faq-search input { width:100%;padding:11px 14px 11px 38px;border:2px solid var(--border);border-radius:var(--radius-lg);font-size:.88rem;transition:.2s; }
+    .faq-search input:focus { border-color:var(--primary);outline:none; }
+    .faq-search .si { position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-tertiary); }
+    .faq-body { padding:16px 24px 24px; }
+    .faq-category { font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text-tertiary);margin:20px 0 8px; }
+    .faq-item { border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:8px;overflow:hidden;background:#fff; }
+    .faq-q { display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;font-weight:600;font-size:.88rem; }
+    .faq-q:hover { background:var(--surface); }
+    .faq-arrow { transition:.2s;flex-shrink:0;color:var(--text-tertiary); }
+    .faq-a { max-height:0;overflow:hidden;transition:.3s ease;font-size:.83rem;color:var(--text-secondary);line-height:1.65; }
+    .faq-item.open .faq-a { max-height:300px;padding:0 16px 14px; }
+    .faq-item.open .faq-arrow { transform:rotate(180deg);color:var(--primary); }
+    .faq-item.open .faq-q { color:var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="faq-hero">
+      <div onclick="history.back()" style="cursor:pointer;margin-bottom:14px;opacity:.8;font-size:.85rem;">← Back</div>
+      <h1>Help Center</h1>
+      <p>Answers to frequently asked questions</p>
+    </div>
+
+    <div class="faq-search">
+      <span class="si">🔍</span>
+      <input type="text" id="faqSearch" placeholder="Search questions…" oninput="searchFaq()">
+    </div>
+
+    <div class="faq-body" id="faqContainer">
+
+      <div class="faq-category" data-cat="Account">Account</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do I create an account? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Tap "Sign Up" on the login screen. You can register with Google (recommended) or use an email and password. Verification email will be sent if you use email sign-up.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I change my username? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Yes! Go to Settings → Profile → Edit Username. You can change it once every 30 days. Usernames must be 3–20 characters.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">I forgot my password. What do I do? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">On the login screen, tap "Forgot Password" and enter your email address. You'll receive a reset link within a few minutes. Check your spam folder if it doesn't arrive.</div>
+      </div>
+
+      <div class="faq-category" data-cat="Gameplay">Gameplay</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How does the rating system work? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">We use an ELO-based rating system. Win a match and gain up to 25 points; lose and drop up to 20. Rating changes scale based on your opponent's rating — beating a higher-rated opponent earns more points.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What happens if the connection drops mid-game? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">You have 30 seconds to reconnect. If you don't reconnect in time, the match is forfeited. Rated matches will count as a loss if forfeit. Casual matches are cancelled.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How does the timer work? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Each player has 30 seconds per turn by default. In ranked play, time runs out = auto-forfeit. You can adjust turn time in custom (private) matches.</div>
+      </div>
+
+      <div class="faq-category" data-cat="Tokens & Shop">Tokens & Shop</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do I earn tokens? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Tokens are earned by winning matches, completing daily quests, logging in daily (streak bonus), and reaching achievements. You can also purchase token packs in the Shop.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Are purchases refundable? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Token purchases are non-refundable once spent. If you purchased tokens and did not receive them, contact support within 48 hours with your transaction ID.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I transfer tokens to other players? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Token transfers are not currently supported to prevent abuse. This feature may be considered in a future update.</div>
+      </div>
+
+      <div class="faq-category" data-cat="Technical">Technical</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Which browsers are supported? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">TicTacArena works best on Chrome, Firefox, Safari, and Edge (latest versions). For the best experience, we recommend Chrome on desktop or our mobile app.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do I report a bug? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Use the "Report" button in-game or visit our Contact page. Include your device, browser version, and steps to reproduce the bug. Screenshots are always helpful!</div>
+      </div>
+    </div>
+
+    <div id="nav-slot"></div>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    function toggleFaq(el) {
+      const item = el.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    function searchFaq() {
+      const q = document.getElementById('faqSearch').value.toLowerCase();
+      document.querySelectorAll('.faq-item').forEach(item => {
+        const text = item.querySelector('.faq-q').textContent.toLowerCase() +
+                     item.querySelector('.faq-a').textContent.toLowerCase();
+        item.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => setActiveNav(''));
+  </script>
+</body>
+</html>

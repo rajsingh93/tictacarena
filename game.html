@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Game</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { overflow: hidden; }
+    .game-page { display: flex; flex-direction: column; height: 100vh; }
+    .game-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg); border-bottom: 1px solid var(--border-light);
+      flex-shrink: 0;
+    }
+    .game-body { flex: 1; overflow-y: auto; padding: 12px 14px; padding-bottom: 80px; }
+    .chat-panel {
+      position: fixed; bottom: 68px; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px;
+      background: var(--bg); border-top: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transition: height 0.3s ease;
+      overflow: hidden;
+    }
+    .chat-panel.collapsed { height: 44px; }
+    .chat-panel.expanded { height: 260px; }
+    .chat-toggle {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; padding: 10px; cursor: pointer;
+      font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-light);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="game-page">
+      <!-- Game Header -->
+      <div class="game-header">
+        <button onclick="showModal('exitConfirm')" style="background:var(--surface);border:none;border-radius:var(--radius-sm);padding:7px 12px;font-size:0.78rem;font-weight:600;cursor:pointer;color:var(--text-secondary);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>
+          Exit
+        </button>
+        <div style="text-align:center;">
+          <div style="font-size:0.65rem;color:var(--text-secondary);font-weight:600;text-transform:uppercase;">Ranked</div>
+          <div class="chip chip-primary" style="font-size:0.65rem;margin-top:2px;">🔴 LIVE</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:0.78rem;color:var(--text-secondary);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span id="viewerCount">128</span>
+        </div>
+      </div>
+
+      <!-- Game Body -->
+      <div class="game-body">
+        <!-- Players Bar -->
+        <div class="game-players-bar">
+          <div class="game-player active-player" id="player1">
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;font-size:1rem;">👑</div>
+            <div class="game-player-info">
+              <div class="game-player-name truncate">ShadowX_Pro</div>
+              <div class="game-player-rank">💎 Lv.47</div>
+            </div>
+            <div style="font-size:1.5rem;font-weight:900;color:var(--primary);">✕</div>
+          </div>
+          
+          <div class="vs-badge">VS</div>
+          
+          <div class="game-player" id="player2">
+            <div style="font-size:1.5rem;font-weight:900;color:var(--secondary);">○</div>
+            <div class="game-player-info" style="text-align:right;">
+              <div class="game-player-name truncate">QueenB_Fire</div>
+              <div class="game-player-rank">🔥 Lv.52</div>
+            </div>
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#059669,#10B981);color:white;font-size:1rem;">🔥</div>
+          </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="game-timer">
+          <div class="timer-circle">
+            <span id="gameTimer">15</span>
+          </div>
+          <div class="timer-label turn-indicator">X's Turn</div>
+        </div>
+
+        <!-- Score -->
+        <div style="display:flex;justify-content:center;gap:24px;margin:8px 0 16px;font-size:0.8rem;font-weight:700;">
+          <span style="color:var(--primary);" id="scoreX">0</span>
+          <span style="color:var(--text-tertiary);">—</span>
+          <span style="color:var(--secondary);" id="scoreO">0</span>
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-board" id="gameBoard"></div>
+
+      </div><!-- end game-body -->
+
+      <!-- Bottom Nav -->
+      <div id="nav-slot"></div>
+
+      <!-- In-game Chat Panel -->
+      <div class="chat-panel collapsed" id="chatPanel">
+        <div class="chat-toggle" onclick="toggleChat()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span id="chatToggleLabel">Chat</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="chatChevron"><polyline points="18 15 12 9 6 15"/></svg>
+        </div>
+        <div class="chat-messages" id="chatMessages" style="padding:8px 12px;overflow-y:auto;flex:1;">
+          <div class="chat-msg">
+            <div class="avatar avatar-xs" style="background:linear-gradient(135deg,#059669,#10B981);color:white;">🔥</div>
+            <div><div style="font-size:0.68rem;color:var(--text-tertiary);margin-bottom:2px;">QueenB_Fire</div><div class="chat-bubble">Good luck! 🤝</div></div>
+          </div>
+          <div class="chat-msg chat-msg-right">
+            <div class="avatar avatar-xs" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;">👑</div>
+            <div><div style="font-size:0.68rem;color:var(--text-tertiary);margin-bottom:2px;text-align:right;">You</div><div class="chat-bubble">GL HF! 🎮</div></div>
+          </div>
+        </div>
+        <div class="chat-input-row" style="padding:8px 12px;">
+          <input type="text" class="input-field" id="chatInput" placeholder="Say something..." style="padding:9px 12px;font-size:0.82rem;" onkeypress="if(event.key==='Enter')sendChat()">
+          <button class="btn btn-primary btn-sm" onclick="sendChat()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div><!-- end game-page -->
+
+    <!-- Win/Loss/Draw Popup -->
+    <div class="popup-overlay" id="gameResultPopup">
+      <div class="popup-sheet">
+        <div class="popup-handle"></div>
+        <div class="popup-result-icon" id="resultIcon">🏆</div>
+        <div class="popup-result-text win" id="resultText">You Win!</div>
+        <div class="popup-result-sub" id="resultSub">Excellent strategy! You outplayed your opponent.</div>
+        <div class="popup-rewards">
+          <div class="popup-reward-item">
+            <div class="popup-reward-value" id="xpReward">+120</div>
+            <div class="popup-reward-label">XP</div>
+          </div>
+          <div class="popup-reward-item">
+            <div class="popup-reward-value" id="coinsReward" style="color:var(--warning);">+80</div>
+            <div class="popup-reward-label">Coins</div>
+          </div>
+          <div class="popup-reward-item">
+            <div class="popup-reward-value" id="rankReward" style="color:var(--primary);">+15</div>
+            <div class="popup-reward-label">Rank Pts</div>
+          </div>
+        </div>
+        <div class="popup-actions">
+          <button class="btn btn-ghost btn-full" onclick="location.href='match.html'">Exit</button>
+          <button class="btn btn-gradient btn-full" onclick="restartGame()">Rematch 🔄</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exit Confirm Modal -->
+    <div class="modal-overlay" id="exitConfirm">
+      <div class="modal-card scale-in">
+        <div class="modal-icon">⚠️</div>
+        <div class="modal-title">Leave Match?</div>
+        <div class="modal-body">Leaving now will count as a forfeit. You will lose rank points.</div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost btn-full" onclick="closeModal('exitConfirm')">Stay</button>
+          <button class="btn btn-danger btn-full" onclick="location.href='match.html'">Forfeit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    let game;
+    let timerInterval;
+    let chatOpen = false;
+    const winData = {
+      win: { icon:'🏆', text:'You Win!', cls:'win', sub:'Excellent strategy! You outplayed your opponent.', xp:'+120', coins:'+80', rank:'+15' },
+      loss: { icon:'💔', text:'You Lost!', cls:'loss', sub:'Don\'t give up. Practice makes perfect!', xp:'+30', coins:'+10', rank:'-10' },
+      draw: { icon:'🤝', text:'Draw!', cls:'draw', sub:'A closely contested match. Well played!', xp:'+60', coins:'+40', rank:'+5' },
+    };
+
+    function onGameEnd(result) {
+      clearInterval(timerInterval);
+      const outcomes = ['win','loss','draw'];
+      const outcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+      const d = winData[outcome];
+      document.getElementById('resultIcon').textContent = d.icon;
+      const rt = document.getElementById('resultText');
+      rt.textContent = d.text;
+      rt.className = 'popup-result-text ' + d.cls;
+      document.getElementById('resultSub').textContent = d.sub;
+      document.getElementById('xpReward').textContent = d.xp;
+      document.getElementById('coinsReward').textContent = d.coins;
+      document.getElementById('rankReward').textContent = d.rank;
+      setTimeout(() => showPopup('gameResultPopup'), 400);
+    }
+
+    function startTimer() {
+      let t = 15;
+      document.getElementById('gameTimer').textContent = t;
+      document.getElementById('gameTimer').style.color = 'var(--primary)';
+      timerInterval = setInterval(() => {
+        t--;
+        document.getElementById('gameTimer').textContent = t;
+        if (t <= 5) document.getElementById('gameTimer').style.color = 'var(--danger)';
+        if (t <= 0) {
+          clearInterval(timerInterval);
+          // Auto-play for demo
+          if (game && !game.gameOver) {
+            const empty = game.board.map((c,i) => c ? -1 : i).filter(i => i >= 0);
+            if (empty.length) game.play(empty[Math.floor(Math.random() * empty.length)]);
+          }
+          setTimeout(startTimer, 200);
+        }
+      }, 1000);
+    }
+
+    function restartGame() {
+      closePopup('gameResultPopup');
+      clearInterval(timerInterval);
+      game = new TicTacToe('gameBoard');
+      startTimer();
+    }
+
+    function toggleChat() {
+      chatOpen = !chatOpen;
+      const panel = document.getElementById('chatPanel');
+      panel.className = chatOpen ? 'chat-panel expanded' : 'chat-panel collapsed';
+      document.getElementById('chatToggleLabel').textContent = chatOpen ? 'Close Chat' : 'Chat';
+      document.getElementById('chatChevron').style.transform = chatOpen ? 'rotate(180deg)' : '';
+    }
+
+    function sendChat() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      const msgs = document.getElementById('chatMessages');
+      msgs.insertAdjacentHTML('beforeend', `
+        <div class="chat-msg chat-msg-right">
+          <div class="avatar avatar-xs" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;">👑</div>
+          <div><div style="font-size:0.68rem;color:var(--text-tertiary);margin-bottom:2px;text-align:right;">You</div><div class="chat-bubble">${text}</div></div>
+        </div>
+      `);
+      input.value = '';
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      game = new TicTacToe('gameBoard');
+      startTimer();
+      // Simulate viewer count fluctuation
+      setInterval(() => {
+        const base = 128;
+        document.getElementById('viewerCount').textContent = base + Math.floor(Math.random() * 20 - 5);
+      }, 4000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Match</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .matchmaking-overlay {
+      position: fixed; inset: 0; background: rgba(255,255,255,0.95);
+      z-index: 400; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 40px;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    .matchmaking-overlay.show { opacity: 1; pointer-events: all; }
+    .cancel-search-btn {
+      margin-top: 32px; color: var(--danger); font-size: 0.875rem;
+      font-weight: 600; cursor: pointer; text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <button class="back-btn" onclick="goBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="page-title">Choose Match Mode</span>
+    </div>
+
+    <main class="page-content fade-in">
+      <div style="padding:16px;">
+        <!-- Ranked Match -->
+        <div style="margin-bottom:12px;">
+          <div style="background:linear-gradient(135deg,#1E1B4B,#4338CA);border-radius:var(--radius-xl);padding:20px;cursor:pointer;transition:var(--transition-spring);color:white;" 
+               onclick="startMatchmaking('ranked')"
+               onmouseenter="this.style.transform='translateY(-2px)'"
+               onmouseleave="this.style.transform=''"
+               onmousedown="this.style.transform='scale(0.98)'"
+               onmouseup="this.style.transform=''">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="font-size:2.5rem;">🏆</div>
+              <div style="flex:1;">
+                <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px;">Ranked Match</div>
+                <div style="font-size:0.78rem;opacity:0.8;">Compete for rank points & climb the leaderboard</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.15);padding:6px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;">FIND →</div>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15);">
+              <div style="text-align:center;">
+                <div style="font-size:1rem;font-weight:800;">4,822</div>
+                <div style="font-size:0.65rem;opacity:0.7;text-transform:uppercase;">Online</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:1rem;font-weight:800;">~30s</div>
+                <div style="font-size:0.65rem;opacity:0.7;text-transform:uppercase;">Avg Wait</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:1rem;font-weight:800;">+120</div>
+                <div style="font-size:0.65rem;opacity:0.7;text-transform:uppercase;">XP Win</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Play with Friends -->
+        <div style="margin-bottom:12px;">
+          <div style="background:linear-gradient(135deg,#064E3B,#059669);border-radius:var(--radius-xl);padding:20px;cursor:pointer;transition:var(--transition-spring);color:white;" 
+               onclick="location.href='play-friends.html'">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="font-size:2.5rem;">👫</div>
+              <div style="flex:1;">
+                <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px;">Play with Friends</div>
+                <div style="font-size:0.78rem;opacity:0.8;">Create a room or join with a code</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.15);padding:6px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;">JOIN →</div>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15);">
+              <div style="font-size:0.75rem;opacity:0.8;font-weight:500;">🔗 Share a room code with any friend</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Training -->
+        <div style="margin-bottom:20px;">
+          <div style="background:linear-gradient(135deg,#7C2D12,#B45309);border-radius:var(--radius-xl);padding:20px;cursor:pointer;transition:var(--transition-spring);color:white;" 
+               onclick="startMatchmaking('training')">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="font-size:2.5rem;">🎯</div>
+              <div style="flex:1;">
+                <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px;">Training Mode</div>
+                <div style="font-size:0.78rem;opacity:0.8;">Practice without ranking pressure</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.15);padding:6px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;">PLAY →</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Opponents -->
+        <div class="section-header" style="padding:0 0 12px;">
+          <span class="section-title">Recent Opponents</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface);border-radius:var(--radius-lg);cursor:pointer;" onclick="startMatchmaking('ranked')">
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;">🔥</div>
+            <div style="flex:1;">
+              <div style="font-size:0.875rem;font-weight:700;">QueenB_Fire</div>
+              <div style="font-size:0.72rem;color:var(--text-secondary);">Master · Last played 2h ago</div>
+            </div>
+            <span class="chip chip-danger">Loss</span>
+            <button class="btn btn-sm btn-primary">Rematch</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface);border-radius:var(--radius-lg);cursor:pointer;" onclick="startMatchmaking('ranked')">
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#059669,#10B981);color:white;">🦉</div>
+            <div style="flex:1;">
+              <div style="font-size:0.875rem;font-weight:700;">NightOwl99</div>
+              <div style="font-size:0.72rem;color:var(--text-secondary);">Gold · Last played 3h ago</div>
+            </div>
+            <span class="chip chip-success">Win</span>
+            <button class="btn btn-sm btn-primary">Rematch</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Matchmaking Overlay -->
+    <div class="matchmaking-overlay" id="matchmakingOverlay">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:24px;color:var(--text-secondary);" id="matchmodeLabel">Finding Ranked Match...</div>
+      <div class="matchmaking-spinner">
+        <div class="matchmaking-ring"></div>
+        <div class="matchmaking-ring"></div>
+        <div class="matchmaking-ring"></div>
+        <div class="matchmaking-center">🎮</div>
+      </div>
+      <div style="font-size:1.5rem;font-weight:900;margin-top:24px;color:var(--text-primary);">Searching</div>
+      <div style="display:flex;align-items:center;gap:4px;margin-top:8px;color:var(--text-secondary);font-size:0.875rem;">
+        <span>Finding opponent</span>
+        <div class="loading-dots">
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;font-size:0.8rem;color:var(--text-tertiary);" id="searchTimer">0:00</div>
+      <div class="cancel-search-btn" onclick="cancelMatchmaking()">Cancel Search</div>
+    </div>
+
+    <div id="nav-slot"></div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    let searchInterval;
+    let searchSeconds = 0;
+
+    function startMatchmaking(mode) {
+      const overlay = document.getElementById('matchmakingOverlay');
+      const label = document.getElementById('matchmodeLabel');
+      const modeNames = { ranked: 'Ranked Match', training: 'Training Match' };
+      label.textContent = `Finding ${modeNames[mode] || 'Match'}...`;
+      overlay.classList.add('show');
+      searchSeconds = 0;
+      searchInterval = setInterval(() => {
+        searchSeconds++;
+        const m = Math.floor(searchSeconds / 60);
+        const s = searchSeconds % 60;
+        document.getElementById('searchTimer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+        if (searchSeconds >= 3) {
+          clearInterval(searchInterval);
+          location.href = '/pages/game.html';
+        }
+      }, 1000);
+    }
+
+    function cancelMatchmaking() {
+      clearInterval(searchInterval);
+      document.getElementById('matchmakingOverlay').classList.remove('show');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TicTacArena — Home</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .quick-play-label {
+      padding: 4px 16px 0;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Drawer Slot -->
+    <div id="drawer-slot"></div>
+
+    <!-- Home Header (Top Strip) -->
+    <header class="home-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <span class="brand-name">TicTacArena</span>
+      </div>
+      <div class="header-actions">
+        <a href="mailbox.html" class="header-icon-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <span class="badge-dot"></span>
+        </a>
+        <a href="notifications.html" class="header-icon-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="badge-dot"></span>
+        </a>
+        <button class="header-icon-btn" onclick="openDrawer()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-content fade-in" style="padding-top:8px;">
+      
+      <!-- Player Card -->
+      <div class="player-card">
+        <div class="player-card-inner">
+          <div class="player-info-row">
+            <div class="avatar avatar-lg avatar-ring" style="background:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.1));color:white;font-size:1.8rem;border:2px solid rgba(255,255,255,0.4);">👑</div>
+            <div class="player-details">
+              <div class="player-name">ShadowX_Pro</div>
+              <div class="player-meta">
+                <span class="level-badge">Lv. 47</span>
+                <span class="rank-badge rank-diamond" style="background:rgba(255,255,255,0.2);color:white;">💎 Diamond</span>
+              </div>
+            </div>
+            <div class="coin-display" style="background:rgba(255,255,255,0.2);color:white;">
+              <div class="coin-icon">₵</div>
+              <span>12,450</span>
+            </div>
+          </div>
+          <div class="xp-bar-container">
+            <div class="xp-bar-label">
+              <span style="color:rgba(255,255,255,0.7);font-size:0.68rem;">XP 6,500 / 10,000</span>
+              <span style="color:rgba(255,255,255,0.9);font-size:0.68rem;font-weight:700;">65%</span>
+            </div>
+            <div class="xp-bar-track" style="background:rgba(255,255,255,0.2);">
+              <div class="xp-bar-fill" style="--xp-width:65%;"></div>
+            </div>
+          </div>
+          <div class="player-card-footer" style="margin-top:14px;">
+            <div class="player-stats-row">
+              <div class="player-stat">
+                <div class="player-stat-value">342</div>
+                <div class="player-stat-label">Wins</div>
+              </div>
+              <div class="player-stat">
+                <div class="player-stat-value">89</div>
+                <div class="player-stat-label">Losses</div>
+              </div>
+              <div class="player-stat">
+                <div class="player-stat-value">24</div>
+                <div class="player-stat-label">Draws</div>
+              </div>
+              <div class="player-stat">
+                <div class="player-stat-value">4,250</div>
+                <div class="player-stat-label">Score</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Banner Slider -->
+      <div class="banner-slider" style="margin-top:12px;">
+        <div class="banner-track" id="bannerTrack">
+          <div class="banner-slide banner-slide-1">
+            <div class="banner-content">
+              <div class="banner-tag">🎉 New Season</div>
+              <div class="banner-title">Season 7 is Live!</div>
+              <div class="banner-sub">New skins, ranks & prizes await</div>
+            </div>
+            <div class="banner-decor">🏆</div>
+          </div>
+          <div class="banner-slide banner-slide-2">
+            <div class="banner-content">
+              <div class="banner-tag">⚡ Weekend Event</div>
+              <div class="banner-title">Double XP Weekend</div>
+              <div class="banner-sub">Earn 2x XP on all matches</div>
+            </div>
+            <div class="banner-decor">⭐</div>
+          </div>
+          <div class="banner-slide banner-slide-3">
+            <div class="banner-content">
+              <div class="banner-tag">🛍️ Limited Time</div>
+              <div class="banner-title">Legendary Skins Sale</div>
+              <div class="banner-sub">50% off until Sunday midnight</div>
+            </div>
+            <div class="banner-decor">💎</div>
+          </div>
+        </div>
+        <div class="banner-dots" id="bannerDots">
+          <div class="banner-dot active"></div>
+          <div class="banner-dot"></div>
+          <div class="banner-dot"></div>
+        </div>
+      </div>
+
+      <!-- Quick Match -->
+      <div class="section-header" style="padding-top:16px;">
+        <span class="section-title">Quick Play</span>
+        <a href="match.html" class="section-link">All Modes →</a>
+      </div>
+      <div class="match-options">
+        <a href="match.html?mode=ranked" class="match-option-card match-card-ranked" style="grid-column: 1 / -1; flex-direction:row; align-items:center;">
+          <span class="match-card-icon" style="font-size:2.5rem;">🏆</span>
+          <div>
+            <div class="match-card-title" style="font-size:1.05rem;">Ranked Match</div>
+            <div class="match-card-sub">Compete & climb the leaderboard</div>
+          </div>
+          <div style="margin-left:auto; background:rgba(255,255,255,0.2); padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:700; white-space:nowrap;">PLAY →</div>
+        </a>
+        <a href="play-friends.html" class="match-option-card match-card-friends">
+          <span class="match-card-icon">👫</span>
+          <div class="match-card-title">With Friends</div>
+          <div class="match-card-sub">Create or join a room</div>
+        </a>
+        <a href="match.html?mode=training" class="match-option-card match-card-training">
+          <span class="match-card-icon">🎯</span>
+          <div class="match-card-title">Training</div>
+          <div class="match-card-sub">Practice your skills</div>
+        </a>
+      </div>
+
+      <!-- Vault Section -->
+      <div class="section-header" style="padding-top:16px;">
+        <span class="section-title">My Vault</span>
+        <a href="vault.html" class="section-link">View All →</a>
+      </div>
+      <div class="vault-section">
+        <div class="vault-grid">
+          <div class="vault-item" onclick="location.href='vault.html'">
+            <div class="vault-item-icon">💰</div>
+            <div class="vault-item-label">Coins</div>
+            <div class="vault-item-count">12,450</div>
+          </div>
+          <div class="vault-item" onclick="location.href='vault.html'">
+            <div class="vault-item-icon">🎁</div>
+            <div class="vault-item-label">Rewards</div>
+            <div class="vault-item-count">3</div>
+          </div>
+          <div class="vault-item" onclick="location.href='vault.html'">
+            <div class="vault-item-icon">🎨</div>
+            <div class="vault-item-label">Skins</div>
+            <div class="vault-item-count">2</div>
+          </div>
+          <div class="vault-item" onclick="location.href='vault.html'">
+            <div class="vault-item-icon">🖼️</div>
+            <div class="vault-item-label">Frames</div>
+            <div class="vault-item-count">2</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Match -->
+      <div class="section-header" style="padding-top:16px;">
+        <span class="section-title">Recent Match</span>
+        <a href="history.html" class="section-link">History →</a>
+      </div>
+      <div style="margin: 0 16px 8px; background:var(--surface); border-radius:var(--radius-lg); padding:14px; display:flex; align-items:center; gap:12px;">
+        <div class="history-result-badge result-win">WIN</div>
+        <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;">🔥</div>
+        <div style="flex:1;">
+          <div style="font-size:0.875rem;font-weight:700;">vs QueenB_Fire</div>
+          <div style="font-size:0.75rem;color:var(--text-secondary);">Ranked · 2:34 · 10 min ago</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--secondary);">+120 XP</div>
+          <div style="font-size:0.75rem;color:var(--warning);font-weight:600;">+80 ₵</div>
+        </div>
+      </div>
+
+      <div style="height:8px;"></div>
+    </main>
+
+    <!-- Nav Slot -->
+    <div id="nav-slot"></div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initBannerSlider('bannerTrack', 'bannerDots');
+    });
+  </script>
+</body>
+</html>

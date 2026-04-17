@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Notifications</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .notif-filter { display:flex; gap:8px; padding:10px 16px; overflow-x:auto; scrollbar-width:none; }
+    .notif-filter::-webkit-scrollbar { display:none; }
+    .nf-btn { flex-shrink:0; padding:5px 12px; border-radius:var(--radius-full); font-size:.78rem; font-weight:600; border:1.5px solid var(--border); background:var(--bg); color:var(--text-secondary); cursor:pointer; transition:var(--transition); }
+    .nf-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .notif-list { padding:0 16px; display:flex; flex-direction:column; gap:8px; }
+    .notif-item { display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg); border-radius:var(--radius-lg); border:1.5px solid var(--border); cursor:pointer; transition:var(--transition); position:relative; }
+    .notif-item:hover { background:var(--surface); }
+    .notif-item.unread { background:var(--primary-light); border-color:rgba(124,58,237,.2); }
+    .notif-item.unread::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--primary); border-radius:var(--radius-full) 0 0 var(--radius-full); }
+    .notif-icon { width:42px; height:42px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+    .notif-icon.friend { background:var(--info-light); }
+    .notif-icon.match { background:var(--secondary-light); }
+    .notif-icon.reward { background:var(--warning-light); }
+    .notif-icon.system { background:var(--surface-2); }
+    .notif-title { font-weight:700; font-size:.85rem; color:var(--text-primary); margin-bottom:2px; }
+    .notif-desc { font-size:.75rem; color:var(--text-secondary); }
+    .notif-time { font-size:.7rem; color:var(--text-tertiary); margin-top:4px; }
+    .notif-actions { display:flex; gap:6px; margin-top:8px; }
+    .mark-all-btn { display:flex; justify-content:flex-end; padding:8px 16px; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="page-title">🔔 Notifications</span>
+  </div>
+
+  <main class="page-content fade-in">
+    <!-- Filter -->
+    <div class="notif-filter">
+      <button class="nf-btn active" onclick="filterNotifs('all',this)">All</button>
+      <button class="nf-btn" onclick="filterNotifs('friend',this)">Friends</button>
+      <button class="nf-btn" onclick="filterNotifs('match',this)">Match</button>
+      <button class="nf-btn" onclick="filterNotifs('reward',this)">Rewards</button>
+    </div>
+
+    <div class="mark-all-btn">
+      <button onclick="markAllRead()" style="font-size:.78rem;color:var(--primary);font-weight:600;background:none;border:none;cursor:pointer;">Mark all read</button>
+    </div>
+
+    <div class="notif-list" id="notifList"></div>
+  </main>
+
+  <div id="nav-slot"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const NOTIFS = [
+  { id:1, type:'friend', icon:'👥', title:'New Friend Request', desc:'⚡ SpeedMaster wants to be your friend', time:'2 min ago', unread:true, actions:['Accept','Decline'] },
+  { id:2, type:'match', icon:'🎮', title:'Match Invite', desc:'🔥 DragonKing#992 challenged you to a ranked match', time:'15 min ago', unread:true, actions:['Accept','Decline'] },
+  { id:3, type:'reward', icon:'🎁', title:'Reward Available', desc:'Weekly challenge completed! Claim your 🪙200', time:'1 hr ago', unread:true, actions:['Claim'] },
+  { id:4, type:'system', icon:'📢', title:'Season Update', desc:'Ranked Season 5 has started. Earn exclusive rewards!', time:'3 hrs ago', unread:false, actions:[] },
+  { id:5, type:'friend', icon:'✅', title:'Friend Request Accepted', desc:'🌟 StarPlayer accepted your friend request', time:'5 hrs ago', unread:false, actions:[] },
+  { id:6, type:'match', icon:'🏆', title:'Match Result', desc:'You won against PixelPro! +25 rank points', time:'Yesterday', unread:false, actions:[] },
+  { id:7, type:'reward', icon:'⭐', title:'Achievement Unlocked', desc:'First Blood — Win your first ranked match', time:'Yesterday', unread:false, actions:[] },
+  { id:8, type:'system', icon:'🛠️', title:'Maintenance Scheduled', desc:'Server maintenance on March 1, 2:00 AM UTC', time:'2 days ago', unread:false, actions:[] },
+  { id:9, type:'friend', icon:'👥', title:'Friend Online', desc:'⚡ CometStrike is now online', time:'2 days ago', unread:false, actions:[] },
+  { id:10, type:'reward', icon:'🪙', title:'Coin Bonus', desc:'You received 50 bonus coins for logging in 7 days straight!', time:'3 days ago', unread:false, actions:[] },
+];
+
+let activeFilter = 'all';
+
+function filterNotifs(type, el) {
+  activeFilter = type;
+  document.querySelectorAll('.nf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderNotifs();
+}
+
+function markAllRead() {
+  NOTIFS.forEach(n => n.unread = false);
+  renderNotifs();
+  showToast('All notifications marked as read');
+}
+
+function renderNotifs() {
+  const list = document.getElementById('notifList');
+  const items = activeFilter === 'all' ? NOTIFS : NOTIFS.filter(n => n.type === activeFilter);
+  if (!items.length) {
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-tertiary);">No notifications</div>`;
+    return;
+  }
+  list.innerHTML = items.map(n => `
+    <div class="notif-item${n.unread?' unread':''}" onclick="readNotif(${n.id})">
+      <div class="notif-icon ${n.type}">${n.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-desc">${n.desc}</div>
+        <div class="notif-time">${n.time}</div>
+        ${n.actions.length ? `
+          <div class="notif-actions">
+            ${n.actions.map((a,i) => `
+              <button onclick="event.stopPropagation();notifAction(${n.id},'${a}')" 
+                class="${i===0?'btn-primary':'btn-secondary'}" 
+                style="padding:4px 14px;font-size:.75rem;border-radius:var(--radius-full);">${a}</button>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function readNotif(id) {
+  const n = NOTIFS.find(x => x.id === id);
+  if (n) { n.unread = false; renderNotifs(); }
+}
+
+function notifAction(id, action) {
+  const n = NOTIFS.find(x => x.id === id);
+  if (!n) return;
+  n.unread = false;
+  n.actions = [];
+  if (action === 'Accept') showToast('Accepted!', 'success');
+  else if (action === 'Decline') showToast('Declined', 'info');
+  else if (action === 'Claim') showToast('Reward claimed! 🎁', 'success');
+  renderNotifs();
+}
+
+renderNotifs();
+setActiveNav('');
+</script>
+</body>
+</html>

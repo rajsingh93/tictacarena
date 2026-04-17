@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Settings</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .settings-section { margin:0 16px 16px; }
+    .section-label { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--text-tertiary); padding:0 4px; margin-bottom:8px; }
+    .settings-card { background:var(--bg); border-radius:var(--radius-lg); border:1.5px solid var(--border); overflow:hidden; }
+    .setting-row { display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border-light); cursor:pointer; transition:var(--transition); }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-row:hover { background:var(--surface); }
+    .setting-icon { width:36px; height:36px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .si-purple { background:var(--primary-light); }
+    .si-green { background:var(--secondary-light); }
+    .si-yellow { background:var(--warning-light); }
+    .si-blue { background:var(--info-light); }
+    .si-red { background:var(--danger-light); }
+    .si-gray { background:var(--surface-2); }
+    .setting-name { font-weight:600; font-size:.88rem; color:var(--text-primary); flex:1; }
+    .setting-desc { font-size:.72rem; color:var(--text-secondary); margin-top:1px; }
+    .setting-val { font-size:.8rem; color:var(--text-tertiary); }
+    .toggle { width:44px; height:24px; border-radius:var(--radius-full); background:var(--border); cursor:pointer; position:relative; transition:background .3s; flex-shrink:0; }
+    .toggle.on { background:var(--primary); }
+    .toggle::after { content:''; position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:2px; left:2px; transition:left .3s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+    .toggle.on::after { left:22px; }
+    .chevron { color:var(--text-tertiary); }
+    .profile-header { display:flex; align-items:center; gap:14px; padding:16px; background:var(--bg); border-radius:var(--radius-lg); border:1.5px solid var(--border); margin:0 16px 16px; cursor:pointer; transition:var(--transition); }
+    .profile-header:hover { background:var(--surface); }
+    .profile-avatar-lg { width:54px; height:54px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1.8rem; flex-shrink:0; }
+    .profile-name { font-weight:800; font-size:1rem; color:var(--text-primary); }
+    .profile-rank { font-size:.78rem; color:var(--text-secondary); margin-top:2px; }
+    .logout-btn { width:100%; padding:14px; background:var(--danger-light); color:var(--danger); border:1.5px solid rgba(239,68,68,.2); border-radius:var(--radius-lg); font-weight:700; font-size:.92rem; cursor:pointer; transition:var(--transition); }
+    .logout-btn:hover { background:var(--danger); color:#fff; }
+    .app-version { text-align:center; padding:8px; font-size:.72rem; color:var(--text-tertiary); }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="page-title">⚙️ Settings</span>
+  </div>
+
+  <main class="page-content fade-in">
+
+    <!-- Profile quick view -->
+    <div class="profile-header" onclick="location.href='profile.html'">
+      <div class="profile-avatar-lg">🐉</div>
+      <div style="flex:1;">
+        <div class="profile-name">TacticalX</div>
+        <div class="profile-rank">💎 Diamond · Level 24</div>
+      </div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
+    <!-- Account -->
+    <div class="settings-section">
+      <div class="section-label">Account</div>
+      <div class="settings-card">
+        <div class="setting-row" onclick="location.href='profile.html'">
+          <div class="setting-icon si-purple">👤</div>
+          <div style="flex:1;"><div class="setting-name">Edit Profile</div><div class="setting-desc">Avatar, username, bio</div></div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="setting-row" onclick="showToast('Google Account: tacticalx@gmail.com')">
+          <div class="setting-icon si-blue">🔑</div>
+          <div style="flex:1;"><div class="setting-name">Linked Account</div><div class="setting-desc">Google — tacticalx@gmail.com</div></div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="setting-row" onclick="location.href='history.html'">
+          <div class="setting-icon si-green">📜</div>
+          <div style="flex:1;"><div class="setting-name">Match History</div><div class="setting-desc">143 matches played</div></div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Settings -->
+    <div class="settings-section">
+      <div class="section-label">Game</div>
+      <div class="settings-card">
+        <div class="setting-row">
+          <div class="setting-icon si-purple">🔊</div>
+          <div style="flex:1;"><div class="setting-name">Sound Effects</div></div>
+          <div class="toggle on" id="toggle-sound" onclick="toggleSetting('sound')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon si-green">🎵</div>
+          <div style="flex:1;"><div class="setting-name">Background Music</div></div>
+          <div class="toggle" id="toggle-music" onclick="toggleSetting('music')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon si-yellow">📳</div>
+          <div style="flex:1;"><div class="setting-name">Haptic Feedback</div></div>
+          <div class="toggle on" id="toggle-haptics" onclick="toggleSetting('haptics')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon si-blue">🔄</div>
+          <div style="flex:1;"><div class="setting-name">Auto Rematch</div><div class="setting-desc">Automatically request rematch after loss</div></div>
+          <div class="toggle" id="toggle-rematch" onclick="toggleSetting('rematch')"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy -->
+    <div class="settings-section">
+      <div class="section-label">Privacy</div>
+      <div class="settings-card">
+        <div class="setting-row" onclick="showSelectModal('Profile Visibility', ['Everyone','Friends Only','Private'])">
+          <div class="setting-icon si-purple">🌐</div>
+          <div style="flex:1;"><div class="setting-name">Profile Visibility</div><div class="setting-desc">Who can see your profile</div></div>
+          <span class="setting-val" id="val-visibility">Everyone</span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:6px;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="setting-row" onclick="showSelectModal('Who Can Message Me', ['Everyone','Friends Only','No One'])">
+          <div class="setting-icon si-green">💬</div>
+          <div style="flex:1;"><div class="setting-name">Who Can Message</div></div>
+          <span class="setting-val" id="val-message">Friends Only</span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:6px;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon si-gray">🚫</div>
+          <div style="flex:1;"><div class="setting-name">Block Unknown Invites</div></div>
+          <div class="toggle on" id="toggle-block-invites" onclick="toggleSetting('block-invites')"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="settings-section">
+      <div class="section-label">Notifications</div>
+      <div class="settings-card">
+        <div class="setting-row">
+          <div class="setting-icon si-yellow">🔔</div>
+          <div style="flex:1;"><div class="setting-name">Push Notifications</div><div class="setting-desc">Master toggle</div></div>
+          <div class="toggle on" id="toggle-push" onclick="toggleSetting('push')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon si-green">🎮</div>
+          <div style="flex:1;"><div class="setting-name">Match Invites</div></div>
+          <div class="toggle on" id="toggle-match-invites" onclick="toggleSetting('match-invites')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon si-purple">🎁</div>
+          <div style="flex:1;"><div class="setting-name">Rewards & Bonuses</div></div>
+          <div class="toggle on" id="toggle-rewards" onclick="toggleSetting('rewards')"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon si-blue">👥</div>
+          <div style="flex:1;"><div class="setting-name">Friend Activity</div></div>
+          <div class="toggle" id="toggle-friends-notif" onclick="toggleSetting('friends-notif')"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance -->
+    <div class="settings-section">
+      <div class="section-label">Appearance</div>
+      <div class="settings-card">
+        <div class="setting-row" onclick="showToast('Light mode is the current theme')">
+          <div class="setting-icon si-yellow">☀️</div>
+          <div style="flex:1;"><div class="setting-name">Theme</div></div>
+          <span class="setting-val">Light</span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:6px;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="setting-row" onclick="showSelectModal('Language', ['English','Spanish','French','German','Japanese'])">
+          <div class="setting-icon si-blue">🌍</div>
+          <div style="flex:1;"><div class="setting-name">Language</div></div>
+          <span class="setting-val">English</span>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-left:6px;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support -->
+    <div class="settings-section">
+      <div class="section-label">Support</div>
+      <div class="settings-card">
+        <div class="setting-row" onclick="showToast('Opening support chat...')">
+          <div class="setting-icon si-green">💬</div>
+          <div style="flex:1;"><div class="setting-name">Contact Support</div></div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="setting-row" onclick="showToast('Version 1.4.2 — Build 2026.02.28')">
+          <div class="setting-icon si-gray">ℹ️</div>
+          <div style="flex:1;"><div class="setting-name">App Version</div></div>
+          <span class="setting-val">v1.4.2</span>
+        </div>
+        <div class="setting-row" onclick="showToast('Opening Terms of Service...')">
+          <div class="setting-icon si-gray">📄</div>
+          <div style="flex:1;"><div class="setting-name">Terms & Privacy</div></div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="settings-section">
+      <button class="logout-btn" onclick="confirmLogout()">
+        <span>🚪 Log Out</span>
+      </button>
+      <div style="margin-top:10px;">
+        <button style="width:100%;padding:12px;background:none;color:var(--danger);border:1.5px solid rgba(239,68,68,.2);border-radius:var(--radius-lg);font-weight:600;font-size:.85rem;cursor:pointer;" onclick="showToast('Account deletion requires email confirmation','info')">
+          Delete Account
+        </button>
+      </div>
+    </div>
+
+    <div class="app-version">TicTacArena v1.4.2 · </div>
+  </main>
+
+  <div id="nav-slot"></div>
+</div>
+
+<!-- Select Modal -->
+<div class="modal-overlay" id="selectModal" onclick="closeSelectModal()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:320px;width:90%;">
+    <div class="modal-title" id="selectModalTitle">Select</div>
+    <div id="selectModalOptions" style="display:flex;flex-direction:column;gap:8px;margin-top:12px;"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+function toggleSetting(id) {
+  const el = document.getElementById('toggle-' + id);
+  if (!el) return;
+  el.classList.toggle('on');
+  showToast(el.classList.contains('on') ? 'Enabled' : 'Disabled');
+}
+
+function showSelectModal(title, options) {
+  document.getElementById('selectModalTitle').textContent = title;
+  document.getElementById('selectModalOptions').innerHTML = options.map(o => `
+    <button onclick="selectOption('${o}', '${title}')" 
+      style="padding:11px;border-radius:var(--radius-md);border:1.5px solid var(--border);background:var(--surface);font-size:.88rem;font-weight:600;cursor:pointer;text-align:left;transition:var(--transition);">
+      ${o}
+    </button>`).join('');
+  document.getElementById('selectModal').classList.add('show');
+}
+
+function closeSelectModal() {
+  document.getElementById('selectModal').classList.remove('show');
+}
+
+function selectOption(val, title) {
+  closeSelectModal();
+  showToast(`${title} set to ${val}`);
+}
+
+function confirmLogout() {
+  showConfirm('Log out of TicTacArena?', () => {
+    showToast('Logging out...', 'info');
+    setTimeout(() => location.href = '/pages/auth/login.html', 1200);
+  });
+}
+
+setActiveNav('');
+</script>
+</body>
+</html>

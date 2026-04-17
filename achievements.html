@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Achievements</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .achiev-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:12px 16px; }
+    .achiev-stat { background:var(--surface); border-radius:var(--radius-lg); padding:14px 10px; text-align:center; }
+    .achiev-stat-val { font-size:1.4rem; font-weight:900; color:var(--primary); }
+    .achiev-stat-lbl { font-size:.72rem; color:var(--text-secondary); font-weight:500; margin-top:2px; }
+    .achiev-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 16px 16px; }
+    .achiev-card { border-radius:var(--radius-lg); padding:16px; text-align:center; border:1.5px solid var(--border); background:var(--bg); transition:var(--transition); cursor:pointer; }
+    .achiev-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+    .achiev-card.locked { opacity:.55; filter:grayscale(.7); }
+    .achiev-card.unlocked { border-color:var(--primary); }
+    .achiev-emoji { font-size:2.2rem; margin-bottom:6px; }
+    .achiev-name { font-size:.82rem; font-weight:700; color:var(--text-primary); margin-bottom:4px; }
+    .achiev-desc { font-size:.72rem; color:var(--text-secondary); margin-bottom:8px; line-height:1.4; }
+    .achiev-progress { background:var(--surface-2); border-radius:var(--radius-full); height:5px; overflow:hidden; }
+    .achiev-progress-fill { height:100%; border-radius:var(--radius-full); background:linear-gradient(90deg,var(--primary),var(--primary-dark)); transition:width .6s ease; }
+    .achiev-prog-lbl { display:flex; justify-content:space-between; font-size:.68rem; color:var(--text-tertiary); margin-top:3px; }
+    .achiev-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:var(--radius-full); font-size:.65rem; font-weight:700; margin-top:6px; }
+    .badge-gold { background:var(--warning-light); color:var(--warning); }
+    .badge-silver { background:#F3F4F6; color:#6B7280; }
+    .badge-bronze { background:#FEF3C7; color:#92400E; }
+    .badge-locked { background:var(--surface-2); color:var(--text-tertiary); }
+    .cat-filter { display:flex; gap:8px; padding:8px 16px; overflow-x:auto; scrollbar-width:none; margin-bottom:4px; }
+    .cat-filter::-webkit-scrollbar { display:none; }
+    .cf-btn { flex-shrink:0; padding:5px 12px; border-radius:var(--radius-full); font-size:.78rem; font-weight:600; border:1.5px solid var(--border); background:var(--bg); color:var(--text-secondary); cursor:pointer; transition:var(--transition); }
+    .cf-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .overall-prog { margin:0 16px 10px; background:var(--surface); border-radius:var(--radius-lg); padding:14px; }
+    .overall-bar { background:var(--border); border-radius:var(--radius-full); height:8px; overflow:hidden; margin:8px 0; }
+    .overall-fill { height:100%; background:linear-gradient(90deg,var(--primary),#A855F7); border-radius:var(--radius-full); transition:width .8s ease; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="page-title">🏅 Achievements</span>
+  </div>
+
+  <main class="page-content fade-in">
+    <!-- Stats -->
+    <div class="achiev-stats">
+      <div class="achiev-stat"><div class="achiev-stat-val">14</div><div class="achiev-stat-lbl">Unlocked</div></div>
+      <div class="achiev-stat"><div class="achiev-stat-val">6</div><div class="achiev-stat-lbl">In Progress</div></div>
+      <div class="achiev-stat"><div class="achiev-stat-val">4</div><div class="achiev-stat-lbl">Locked</div></div>
+    </div>
+
+    <!-- Overall progress -->
+    <div class="overall-prog">
+      <div style="display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;">
+        <span>Overall Progress</span><span style="color:var(--primary);">58%</span>
+      </div>
+      <div class="overall-bar">
+        <div class="overall-fill" style="width:58%"></div>
+      </div>
+      <div style="font-size:.72rem;color:var(--text-secondary);">14 of 24 achievements unlocked</div>
+    </div>
+
+    <!-- Category filter -->
+    <div class="cat-filter">
+      <button class="cf-btn active" onclick="filterAchiev('all',this)">All</button>
+      <button class="cf-btn" onclick="filterAchiev('combat',this)">Combat</button>
+      <button class="cf-btn" onclick="filterAchiev('social',this)">Social</button>
+      <button class="cf-btn" onclick="filterAchiev('special',this)">Special</button>
+    </div>
+
+    <!-- Grid -->
+    <div class="achiev-grid" id="achievGrid"></div>
+  </main>
+
+  <div id="nav-slot"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const ACHIEVEMENTS = [
+  { id:1, emoji:'⚔️', name:'First Blood', desc:'Win your first ranked match', cat:'combat', progress:1, max:1, tier:'bronze', unlocked:true },
+  { id:2, emoji:'🔥', name:'On Fire', desc:'Win 5 matches in a row', cat:'combat', progress:5, max:5, tier:'silver', unlocked:true },
+  { id:3, emoji:'💯', name:'Centurion', desc:'Win 100 ranked matches', cat:'combat', progress:73, max:100, tier:'gold', unlocked:false },
+  { id:4, emoji:'🏆', name:'Champion', desc:'Reach Diamond rank', cat:'combat', progress:1, max:1, tier:'gold', unlocked:true },
+  { id:5, emoji:'⚡', name:'Speed Demon', desc:'Win a match in under 60 seconds', cat:'combat', progress:1, max:1, tier:'silver', unlocked:true },
+  { id:6, emoji:'🧠', name:'Big Brain', desc:'Win without any opponent scoring', cat:'combat', progress:4, max:5, tier:'gold', unlocked:false },
+  { id:7, emoji:'👥', name:'Social Butterfly', desc:'Add 10 friends', cat:'social', progress:10, max:10, tier:'bronze', unlocked:true },
+  { id:8, emoji:'💬', name:'Chatterbox', desc:'Send 100 chat messages', cat:'social', progress:67, max:100, tier:'silver', unlocked:false },
+  { id:9, emoji:'🤝', name:'Good Sport', desc:'Play 50 matches with friends', cat:'social', progress:32, max:50, tier:'bronze', unlocked:false },
+  { id:10, emoji:'🌍', name:'Worldly', desc:'Chat in World Chat 30 times', cat:'social', progress:30, max:30, tier:'bronze', unlocked:true },
+  { id:11, emoji:'🎁', name:'Collector', desc:'Own 20 items in vault', cat:'special', progress:7, max:20, tier:'silver', unlocked:false },
+  { id:12, emoji:'👑', name:'Royalty', desc:'Equip a Legendary item', cat:'special', progress:0, max:1, tier:'gold', unlocked:false },
+  { id:13, emoji:'📅', name:'Loyal Player', desc:'Login 30 days in a row', cat:'special', progress:30, max:30, tier:'gold', unlocked:true },
+  { id:14, emoji:'💎', name:'High Roller', desc:'Top up 5000+ coins total', cat:'special', progress:2000, max:5000, tier:'silver', unlocked:false },
+  { id:15, emoji:'🌟', name:'Star Player', desc:'Reach top 10 globally', cat:'combat', progress:0, max:1, tier:'gold', unlocked:false },
+  { id:16, emoji:'🤖', name:'Match Machine', desc:'Play 500 total matches', cat:'combat', progress:143, max:500, tier:'silver', unlocked:false },
+  { id:17, emoji:'🕊️', name:'Peacemaker', desc:'Draw 20 matches', cat:'combat', progress:20, max:20, tier:'bronze', unlocked:true },
+  { id:18, emoji:'🃏', name:'Wild Card', desc:'Win from a losing position', cat:'special', progress:1, max:1, tier:'bronze', unlocked:true },
+  { id:19, emoji:'🔒', name:'Fortress', desc:'Complete 30 training games', cat:'combat', progress:12, max:30, tier:'bronze', unlocked:false },
+  { id:20, emoji:'🎯', name:'Marksman', desc:'Win 10 ranked games in 1 day', cat:'combat', progress:3, max:10, tier:'gold', unlocked:false },
+  { id:21, emoji:'🦁', name:'Leader of the Pack', desc:'Top a weekly leaderboard', cat:'combat', progress:1, max:1, tier:'gold', unlocked:true },
+  { id:22, emoji:'🌈', name:'Rainbow Collector', desc:'Own every avatar type', cat:'special', progress:2, max:5, tier:'silver', unlocked:false },
+  { id:23, emoji:'💌', name:'Pen Pal', desc:'Send 50 personal messages', cat:'social', progress:50, max:50, tier:'bronze', unlocked:true },
+  { id:24, emoji:'🚀', name:'Rocket Launch', desc:'Climb 500 rank points in 1 week', cat:'special', progress:1, max:1, tier:'gold', unlocked:true },
+];
+
+let achivFilter = 'all';
+function filterAchiev(cat, el) {
+  achivFilter = cat;
+  document.querySelectorAll('.cf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderAchievements();
+}
+
+function renderAchievements() {
+  const grid = document.getElementById('achievGrid');
+  const items = achivFilter === 'all' ? ACHIEVEMENTS : ACHIEVEMENTS.filter(a => a.cat === achivFilter);
+  grid.innerHTML = items.map(a => {
+    const pct = Math.round((a.progress / a.max) * 100);
+    return `
+      <div class="achiev-card${a.unlocked?' unlocked':' locked'}" onclick="showAchievDetail('${a.name}','${a.desc}',${pct})">
+        <div class="achiev-emoji">${a.emoji}</div>
+        <div class="achiev-name">${a.name}</div>
+        <div class="achiev-desc">${a.desc}</div>
+        <div class="achiev-progress"><div class="achiev-progress-fill" style="width:${pct}%"></div></div>
+        <div class="achiev-prog-lbl"><span>${a.progress}/${a.max}</span><span>${pct}%</span></div>
+        <div class="achiev-badge badge-${a.unlocked ? a.tier : 'locked'}">
+          ${a.unlocked ? (a.tier === 'gold' ? '🥇 Gold' : a.tier === 'silver' ? '🥈 Silver' : '🥉 Bronze') : '🔒 Locked'}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showAchievDetail(name, desc, pct) {
+  showToast(`${name}: ${desc} (${pct}% complete)`);
+}
+
+renderAchievements();
+setActiveNav('');
+</script>
+</body>
+</html>

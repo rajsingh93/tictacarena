@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — World Chat</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .world-chat-layout { display:flex; flex-direction:column; height:100vh; }
+    .world-messages { flex:1; overflow-y:auto; padding:8px 0; }
+    .world-input-bar { padding:10px 14px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; background:var(--bg); padding-bottom:calc(10px + env(safe-area-inset-bottom,0)); }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="world-chat-layout">
+    <div class="page-header">
+      <button class="back-btn" onclick="goBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="page-title">🌍 World Chat</span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:5px;font-size:0.75rem;color:var(--secondary);font-weight:600;">
+        <div style="width:7px;height:7px;background:var(--secondary);border-radius:50%;"></div>
+        4,822 online
+      </div>
+    </div>
+
+    <div class="world-messages" id="worldMessages"></div>
+
+    <div id="nav-slot" style="position:static;transform:none;box-shadow:none;border-top:none;"></div>
+
+    <div class="world-input-bar">
+      <button onclick="quickEmoji()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;padding:4px;">😊</button>
+      <input type="text" class="input-field" id="worldMsgInput" placeholder="Say something to the world..." style="flex:1;padding:10px 14px;font-size:0.875rem;" onkeypress="if(event.key==='Enter')sendWorldMsg()">
+      <button class="btn btn-primary btn-sm" onclick="sendWorldMsg()" style="border-radius:50%;width:40px;height:40px;padding:0;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile Preview Modal -->
+  <div class="modal-overlay" id="profilePreviewModal" onclick="if(event.target===this)closeModal('profilePreviewModal')">
+    <div class="modal-card scale-in" id="profilePreviewCard">
+      <div id="previewContent"></div>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderWorldChat();
+  simulateLiveChat();
+});
+
+function renderWorldChat() {
+  const el = document.getElementById('worldMessages');
+  el.innerHTML = WORLD_CHAT.map(msg => buildMsgHTML(msg)).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function buildMsgHTML(msg) {
+  return `
+    <div class="world-chat-msg" onclick="showProfilePreview(${msg.player.id})">
+      <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;font-size:1rem;flex-shrink:0;cursor:pointer;">${msg.player.avatar}</div>
+      <div style="flex:1;">
+        <div class="world-msg-user">
+          <span class="world-msg-name">${msg.player.name}</span>
+          <span class="world-msg-level">Lv.${msg.player.level}</span>
+          <span style="font-size:0.65rem;color:var(--text-tertiary);margin-left:2px;">${msg.time}</span>
+        </div>
+        <div class="world-msg-text">${msg.message}</div>
+      </div>
+    </div>
+  `;
+}
+
+function sendWorldMsg() {
+  const input = document.getElementById('worldMsgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  
+  const el = document.getElementById('worldMessages');
+  const myMsg = { player: PLAYERS[0], message: text, time: 'just now' };
+  el.insertAdjacentHTML('beforeend', `
+    <div class="world-chat-msg" style="background:var(--primary-light);border-left:3px solid var(--primary);">
+      <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;font-size:1rem;flex-shrink:0;">${myMsg.player.avatar}</div>
+      <div style="flex:1;">
+        <div class="world-msg-user">
+          <span class="world-msg-name" style="color:var(--primary);">${myMsg.player.name}</span>
+          <span class="world-msg-level">Lv.${myMsg.player.level}</span>
+          <span style="font-size:0.65rem;color:var(--text-tertiary);">just now</span>
+        </div>
+        <div class="world-msg-text">${text}</div>
+      </div>
+    </div>
+  `);
+  input.value = '';
+  el.scrollTop = el.scrollHeight;
+}
+
+function quickEmoji() {
+  const emojis = ['😂','🔥','👊','💪','😎','🏆','❤️','GG!','Nice!'];
+  document.getElementById('worldMsgInput').value = emojis[Math.floor(Math.random() * emojis.length)];
+}
+
+function simulateLiveChat() {
+  const liveMessages = [
+    "Anyone up for ranked? 🎮",
+    "Just got to Platinum! 🎉",
+    "GG everyone!",
+    "The new skins are amazing 🔥",
+    "Looking for good players!",
+    "Who wants to play friends mode?",
+  ];
+  let idx = 0;
+  setInterval(() => {
+    const player = PLAYERS[Math.floor(Math.random() * PLAYERS.length)];
+    const msg = { player, message: liveMessages[idx % liveMessages.length], time: 'just now' };
+    idx++;
+    const el = document.getElementById('worldMessages');
+    el.insertAdjacentHTML('beforeend', buildMsgHTML(msg));
+    el.scrollTop = el.scrollHeight;
+    // Remove old messages to prevent DOM bloat
+    while (el.children.length > 30) el.removeChild(el.firstChild);
+  }, 5000);
+}
+
+function showProfilePreview(playerId) {
+  const player = PLAYERS.find(p => p.id === playerId);
+  if (!player) return;
+  const isMyPlayer = playerId === 1;
+  const isFriend = FRIENDS.some(f => f.id === playerId);
+  
+  document.getElementById('previewContent').innerHTML = `
+    <div style="text-align:center;margin-bottom:16px;">
+      <div class="avatar avatar-xl" style="margin:0 auto 10px;background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;font-size:2rem;">${player.avatar}</div>
+      <div style="font-size:1.1rem;font-weight:800;">${player.name}</div>
+      <div style="display:flex;justify-content:center;gap:8px;margin-top:6px;">
+        <span class="chip chip-primary">${player.rank}</span>
+        <span class="chip">Lv.${player.level}</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+      <div style="background:var(--surface);border-radius:var(--radius-md);padding:10px;text-align:center;">
+        <div style="font-weight:800;color:var(--secondary);">${player.wins}</div>
+        <div style="font-size:0.65rem;color:var(--text-secondary);">Wins</div>
+      </div>
+      <div style="background:var(--surface);border-radius:var(--radius-md);padding:10px;text-align:center;">
+        <div style="font-weight:800;color:var(--danger);">${player.losses}</div>
+        <div style="font-size:0.65rem;color:var(--text-secondary);">Losses</div>
+      </div>
+      <div style="background:var(--surface);border-radius:var(--radius-md);padding:10px;text-align:center;">
+        <div style="font-weight:800;color:var(--primary);">${player.score}</div>
+        <div style="font-size:0.65rem;color:var(--text-secondary);">Score</div>
+      </div>
+    </div>
+    ${!isMyPlayer ? `
+    <div style="display:flex;gap:8px;">
+      ${isFriend ? 
+        '<button class="btn btn-primary btn-full btn-sm" onclick="closeModal(\'profilePreviewModal\');location.href=\'/pages/chat.html\'">💬 Message</button>' :
+        '<button class="btn btn-primary btn-full btn-sm" onclick="closeModal(\'profilePreviewModal\');showToast(\'Friend request sent!\',\'success\')">👥 Add Friend</button>'
+      }
+      <button class="btn btn-ghost btn-sm" onclick="showToast(\'Challenge sent!\',\'success\')">⚔️</button>
+    </div>` : ''}
+  `;
+  showModal('profilePreviewModal');
+}
+</script>
+</body>
+</html>

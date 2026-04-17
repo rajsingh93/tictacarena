@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Error</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { background:#fff; }
+    .error-page { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; text-align:center; }
+    .error-code { font-size:6rem; font-weight:900; color:var(--primary); opacity:.15; line-height:1; margin-bottom:-20px; }
+    .error-title { font-size:1.6rem; font-weight:900; color:var(--text-primary); margin-bottom:8px; }
+    .error-sub { font-size:.9rem; color:var(--text-secondary); max-width:300px; line-height:1.6; margin-bottom:28px; }
+  </style>
+</head>
+<body>
+<div class="app-container" style="background:#fff;">
+  <div class="error-page">
+    <!-- SVG Illustration -->
+    <svg width="160" height="140" viewBox="0 0 160 140" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:16px;">
+      <circle cx="80" cy="70" r="60" fill="#FEE2E2"/>
+      <circle cx="80" cy="70" r="45" fill="#FCA5A5" opacity=".4"/>
+      <line x1="55" y1="50" x2="75" y2="90" stroke="#EF4444" stroke-width="6" stroke-linecap="round"/>
+      <line x1="105" y1="50" x2="85" y2="90" stroke="#EF4444" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="80" cy="95" r="5" fill="#EF4444"/>
+      <rect x="74" y="58" width="12" height="28" rx="6" fill="#EF4444"/>
+    </svg>
+
+    <div class="error-code">404</div>
+    <div class="error-title">Page Not Found</div>
+    <div class="error-sub">The page you're looking for doesn't exist or was moved. Let's get you back on track!</div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;">
+      <button class="btn-primary" onclick="location.href='index.html'">🏠 Go to Home</button>
+      <button class="btn-secondary" onclick="history.go(-1)">← Go Back</button>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Match History</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .hist-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px 16px; }
+    .hist-stat { background:var(--surface); border-radius:var(--radius-lg); padding:12px 8px; text-align:center; }
+    .hist-stat-val { font-size:1.2rem; font-weight:900; }
+    .hist-stat-lbl { font-size:.68rem; color:var(--text-secondary); font-weight:500; margin-top:2px; }
+    .hist-val-win { color:var(--secondary); }
+    .hist-val-loss { color:var(--danger); }
+    .hist-val-draw { color:var(--warning); }
+    .hist-val-total { color:var(--primary); }
+    .winrate-bar-wrap { margin:0 16px 12px; background:var(--surface); border-radius:var(--radius-lg); padding:14px; }
+    .winrate-bar { display:flex; height:10px; border-radius:var(--radius-full); overflow:hidden; gap:2px; }
+    .bar-win { background:var(--secondary); transition:width .6s ease; }
+    .bar-loss { background:var(--danger); transition:width .6s ease; }
+    .bar-draw { background:var(--warning); transition:width .6s ease; }
+    .hist-filter { display:flex; gap:8px; padding:6px 16px; overflow-x:auto; scrollbar-width:none; }
+    .hist-filter::-webkit-scrollbar { display:none; }
+    .hf-btn { flex-shrink:0; padding:5px 12px; border-radius:var(--radius-full); font-size:.78rem; font-weight:600; border:1.5px solid var(--border); background:var(--bg); color:var(--text-secondary); cursor:pointer; transition:var(--transition); }
+    .hf-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .hist-list { padding:0 16px 16px; display:flex; flex-direction:column; gap:8px; }
+    .hist-item { display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg); border-radius:var(--radius-lg); border:1.5px solid var(--border); transition:var(--transition); cursor:pointer; }
+    .hist-item:hover { background:var(--surface); }
+    .hist-result-badge { width:40px; height:40px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:900; flex-shrink:0; }
+    .result-win { background:var(--secondary-light); color:var(--secondary); }
+    .result-loss { background:var(--danger-light); color:var(--danger); }
+    .result-draw { background:var(--warning-light); color:var(--warning); }
+    .hist-opponent { font-weight:700; font-size:.88rem; color:var(--text-primary); }
+    .hist-mode { font-size:.72rem; color:var(--text-secondary); margin-top:1px; }
+    .hist-pts { margin-left:auto; font-weight:800; font-size:.85rem; text-align:right; }
+    .hist-time { font-size:.7rem; color:var(--text-tertiary); margin-top:2px; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="page-title">📜 Match History</span>
+  </div>
+
+  <main class="page-content fade-in">
+    <!-- Stats row -->
+    <div class="hist-stats">
+      <div class="hist-stat"><div class="hist-stat-val hist-val-total">143</div><div class="hist-stat-lbl">Total</div></div>
+      <div class="hist-stat"><div class="hist-stat-val hist-val-win">89</div><div class="hist-stat-lbl">Wins</div></div>
+      <div class="hist-stat"><div class="hist-stat-val hist-val-loss">38</div><div class="hist-stat-lbl">Losses</div></div>
+      <div class="hist-stat"><div class="hist-stat-val hist-val-draw">16</div><div class="hist-stat-lbl">Draws</div></div>
+    </div>
+
+    <!-- Win rate bar -->
+    <div class="winrate-bar-wrap">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:8px;">
+        <span style="font-weight:700;">Win Rate</span>
+        <span style="font-weight:800;color:var(--secondary);">62.2%</span>
+      </div>
+      <div class="winrate-bar">
+        <div class="bar-win" style="width:62%"></div>
+        <div class="bar-draw" style="width:11%"></div>
+        <div class="bar-loss" style="width:27%"></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;font-size:.72rem;color:var(--text-secondary);">
+        <span><span style="color:var(--secondary);font-weight:700;">■</span> Win</span>
+        <span><span style="color:var(--warning);font-weight:700;">■</span> Draw</span>
+        <span><span style="color:var(--danger);font-weight:700;">■</span> Loss</span>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="hist-filter">
+      <button class="hf-btn active" onclick="filterHist('all',this)">All</button>
+      <button class="hf-btn" onclick="filterHist('ranked',this)">Ranked</button>
+      <button class="hf-btn" onclick="filterHist('friends',this)">Friends</button>
+      <button class="hf-btn" onclick="filterHist('training',this)">Training</button>
+    </div>
+
+    <!-- List -->
+    <div class="hist-list" id="histList"></div>
+  </main>
+
+  <div id="nav-slot"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const MATCHES = [
+  { id:1, opponent:'⚡ SpeedMaster', mode:'ranked', result:'win', pts:'+28', duration:'4m 12s', ago:'Today, 3:20 PM', avatar:'⚡', level:18 },
+  { id:2, opponent:'🔥 DragonKing', mode:'ranked', result:'loss', pts:'-15', duration:'3m 45s', ago:'Today, 2:11 PM', avatar:'🔥', level:24 },
+  { id:3, opponent:'🌟 StarPlayer', mode:'ranked', result:'win', pts:'+22', duration:'5m 03s', ago:'Today, 11:30 AM', avatar:'🌟', level:15 },
+  { id:4, opponent:'🎮 PixelPro', mode:'friends', result:'draw', pts:'0', duration:'6m 00s', ago:'Yesterday, 8:00 PM', avatar:'🎮', level:12 },
+  { id:5, opponent:'💀 DarkHorse', mode:'ranked', result:'win', pts:'+31', duration:'2m 55s', ago:'Yesterday, 5:44 PM', avatar:'💀', level:21 },
+  { id:6, opponent:'Training Bot', mode:'training', result:'win', pts:'0', duration:'3m 15s', ago:'Yesterday, 4:00 PM', avatar:'🤖', level:1 },
+  { id:7, opponent:'🦊 FoxTrot99', mode:'ranked', result:'loss', pts:'-19', duration:'4m 30s', ago:'2 days ago', avatar:'🦊', level:20 },
+  { id:8, opponent:'🌙 MoonWalker', mode:'friends', result:'win', pts:'0', duration:'7m 10s', ago:'2 days ago', avatar:'🌙', level:14 },
+  { id:9, opponent:'🏹 Archer', mode:'ranked', result:'win', pts:'+25', duration:'3m 22s', ago:'3 days ago', avatar:'🏹', level:17 },
+  { id:10, opponent:'⚔️ SwordMaster', mode:'ranked', result:'draw', pts:'+5', duration:'5m 45s', ago:'3 days ago', avatar:'⚔️', level:22 },
+  { id:11, opponent:'🦅 EagleEye', mode:'ranked', result:'loss', pts:'-12', duration:'4m 00s', ago:'4 days ago', avatar:'🦅', level:19 },
+  { id:12, opponent:'🎯 Bullseye', mode:'friends', result:'win', pts:'0', duration:'6m 30s', ago:'4 days ago', avatar:'🎯', level:11 },
+];
+
+let histFilter = 'all';
+function filterHist(mode, el) {
+  histFilter = mode;
+  document.querySelectorAll('.hf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('histList');
+  const items = histFilter === 'all' ? MATCHES : MATCHES.filter(m => m.mode === histFilter);
+  list.innerHTML = items.map(m => `
+    <div class="hist-item" onclick="showToast('Match vs ${m.opponent.replace(/'/g, "\\'")} — ${m.mode.toUpperCase()}')">
+      <div class="hist-result-badge result-${m.result}">
+        ${m.result === 'win' ? 'W' : m.result === 'loss' ? 'L' : 'D'}
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div class="hist-opponent">${m.opponent}</div>
+        <div class="hist-mode">${m.mode.charAt(0).toUpperCase()+m.mode.slice(1)} · Lv.${m.level} · ${m.duration}</div>
+        <div class="hist-time">${m.ago}</div>
+      </div>
+      <div class="hist-pts">
+        <div style="color:${m.result==='win'?'var(--secondary)':m.result==='loss'?'var(--danger)':'var(--warning)'};">${m.pts}</div>
+        <div style="font-size:.68rem;color:var(--text-tertiary);">pts</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderHistory();
+setActiveNav('');
+</script>
+</body>
+</html>

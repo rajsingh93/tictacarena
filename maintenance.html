@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Maintenance</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { background:#fff; }
+    .error-page { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; text-align:center; }
+    .error-svg { width:180px; height:180px; margin-bottom:28px; }
+    .error-title { font-size:1.6rem; font-weight:900; color:var(--text-primary); margin-bottom:8px; }
+    .error-sub { font-size:.9rem; color:var(--text-secondary); max-width:300px; line-height:1.6; margin-bottom:28px; }
+    .countdown { font-size:2.5rem; font-weight:900; color:var(--primary); margin:12px 0; font-variant-numeric:tabular-nums; }
+    .countdown-lbl { font-size:.8rem; color:var(--text-tertiary); }
+    .error-actions { display:flex; flex-direction:column; gap:10px; width:100%; max-width:280px; }
+  </style>
+</head>
+<body>
+<div class="app-container" style="background:#fff;">
+  <div class="error-page">
+    <!-- SVG Illustration -->
+    <svg class="error-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="90" fill="#EDE9FE"/>
+      <rect x="55" y="75" width="90" height="70" rx="10" fill="#7C3AED" opacity=".15"/>
+      <rect x="65" y="65" width="70" height="55" rx="8" fill="#7C3AED" opacity=".3"/>
+      <rect x="75" y="78" width="50" height="6" rx="3" fill="#7C3AED"/>
+      <rect x="75" y="90" width="35" height="6" rx="3" fill="#7C3AED" opacity=".6"/>
+      <rect x="75" y="102" width="42" height="6" rx="3" fill="#7C3AED" opacity=".4"/>
+      <circle cx="140" cy="60" r="28" fill="#FEF3C7"/>
+      <path d="M140 46 L143 58 L155 58 L145 66 L148 78 L140 70 L132 78 L135 66 L125 58 L137 58 Z" fill="#F59E0B" opacity=".8"/>
+      <rect x="88" y="148" width="24" height="12" rx="4" fill="#7C3AED" opacity=".5"/>
+    </svg>
+
+    <div style="font-size:2rem;margin-bottom:8px;">🛠️</div>
+    <div class="error-title">Under Maintenance</div>
+    <div class="error-sub">We're upgrading TicTacArena with exciting new features. We'll be back shortly!</div>
+
+    <div class="countdown" id="countdown">02:30:00</div>
+    <div class="countdown-lbl">Estimated time remaining</div>
+
+    <div style="height:20px;"></div>
+    <div class="error-actions">
+      <button class="btn-primary" onclick="showToast('We\'ll notify you when we\'re back online!')">
+        🔔 Notify Me When Ready
+      </button>
+      <a href="https://twitter.com/TicTacArena" style="text-align:center;font-size:.85rem;color:var(--primary);font-weight:600;text-decoration:none;padding:12px;">
+        Follow for Updates @TicTacArena
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+let total = 9000; // 2h 30m in seconds
+function updateCountdown() {
+  if (total <= 0) { document.getElementById('countdown').textContent = 'Almost ready!'; return; }
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  document.getElementById('countdown').textContent =
+    `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  total--;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 20px;border-radius:50px;font-size:.85rem;font-weight:600;z-index:9999;animation:fadeIn .3s ease;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

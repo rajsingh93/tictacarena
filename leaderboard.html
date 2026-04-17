@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Leaderboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .top3 { display:grid; grid-template-columns:1fr 1.1fr 1fr; gap:8px; padding:16px; align-items:flex-end; }
+    .top3-card { background:var(--surface); border-radius:var(--radius-xl); padding:14px 8px; text-align:center; position:relative; cursor:pointer; transition:var(--transition); }
+    .top3-card:hover { transform:translateY(-2px); }
+    .top3-first { background:linear-gradient(135deg,#FEF3C7,#FDE68A); }
+    .top3-second { background:linear-gradient(135deg,#F9FAFB,#F3F4F6); }
+    .top3-third { background:linear-gradient(135deg,#FEF3C7,#FDE68A); opacity:0.8; }
+    .crown-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); font-size:1.5rem; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="page-title">🏆 Leaderboard</span>
+  </div>
+
+  <main class="page-content fade-in">
+    <!-- Tabs -->
+    <div style="padding:10px 16px 0;">
+      <div class="tab-bar" id="lbTabs">
+        <button class="tab-btn active" data-tab="global" onclick="switchLBTab(this)">Global</button>
+        <button class="tab-btn" data-tab="weekly" onclick="switchLBTab(this)">Weekly</button>
+        <button class="tab-btn" data-tab="monthly" onclick="switchLBTab(this)">Monthly</button>
+        <button class="tab-btn" data-tab="friends" onclick="switchLBTab(this)">Friends</button>
+      </div>
+    </div>
+
+    <!-- Top 3 -->
+    <div class="top3" id="top3Container"></div>
+
+    <!-- My Rank -->
+    <div style="margin:0 16px 12px;background:var(--primary-light);border:1.5px solid var(--primary);border-radius:var(--radius-lg);padding:12px 16px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:0.75rem;font-weight:800;color:var(--primary);width:28px;text-align:center;">#14</div>
+      <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;">👑</div>
+      <div style="flex:1;">
+        <div style="font-size:0.875rem;font-weight:700;color:var(--primary);">ShadowX_Pro (You)</div>
+        <div style="font-size:0.72rem;color:var(--primary-dark);">Diamond · 342W 89L · 4,250 pts</div>
+      </div>
+      <span class="chip chip-primary" style="font-size:0.65rem;">📈 +3</span>
+    </div>
+
+    <!-- Rankings List -->
+    <div id="rankingsList"></div>
+  </main>
+
+  <div id="nav-slot"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const sortedPlayers = [...PLAYERS].sort((a,b) => b.score - a.score);
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderTop3(sortedPlayers);
+  renderRankings(sortedPlayers);
+});
+
+function renderTop3(players) {
+  const top = players.slice(0,3);
+  const order = [top[1], top[0], top[2]]; // 2nd, 1st, 3rd
+  const positions = ['second','first','third'];
+  const crowns = ['🥈','🥇','🥉'];
+  const crownsTop = ['','👑',''];
+  
+  document.getElementById('top3Container').innerHTML = order.map((p,i) => `
+    <div class="top3-card top3-${positions[i]}" onclick="showToast('Viewing ${p.name} profile','')">
+      ${i===1 ? '<div class="crown-badge">👑</div>' : ''}
+      <div style="font-size:${i===1?'2rem':'1.6rem'};margin-bottom:6px;">${p.avatar}</div>
+      <div style="font-size:1.5rem;margin-bottom:6px;">${crowns[i]}</div>
+      <div style="font-size:${i===1?'0.8rem':'0.72rem'};font-weight:800;truncate;">${p.name.substring(0,10)}</div>
+      <div style="font-size:0.65rem;color:var(--text-secondary);margin:3px 0;">${p.rank}</div>
+      <div style="font-size:${i===1?'0.9rem':'0.78rem'};font-weight:800;color:var(--primary);">${p.score.toLocaleString()}</div>
+    </div>
+  `).join('');
+}
+
+function renderRankings(players) {
+  const el = document.getElementById('rankingsList');
+  el.innerHTML = players.slice(0, 50).map((p,i) => `
+    <div class="leaderboard-item" onclick="showToast('Viewing ${p.name}','')">
+      <div class="rank-number ${i<3?'rank-'+(i+1):''}">${i<3 ? ['🥇','🥈','🥉'][i] : (i+1)}</div>
+      <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#7C3AED,#9333EA);color:white;font-size:1rem;">${p.avatar}</div>
+      <div class="leaderboard-player">
+        <div class="leaderboard-name">${p.name}</div>
+        <div class="leaderboard-stats">${p.rank} · ${p.wins}W ${p.losses}L ${p.draws}D</div>
+      </div>
+      <div class="leaderboard-score">${p.score.toLocaleString()}</div>
+    </div>
+  `).join('');
+}
+
+function switchLBTab(btn) {
+  document.querySelectorAll('#lbTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const tab = btn.dataset.tab;
+  
+  let players;
+  if (tab === 'friends') {
+    players = FRIENDS.sort((a,b) => b.score - a.score);
+  } else if (tab === 'weekly') {
+    players = [...sortedPlayers].sort(() => Math.random() - 0.5);
+  } else if (tab === 'monthly') {
+    players = [...sortedPlayers].reverse();
+  } else {
+    players = sortedPlayers;
+  }
+  
+  renderTop3(players);
+  renderRankings(players);
+}
+</script>
+</body>
+</html>

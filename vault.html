@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Vault</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .vault-tabs { display:flex; gap:8px; padding:10px 16px; overflow-x:auto; scrollbar-width:none; }
+    .vault-tabs::-webkit-scrollbar { display:none; }
+    .vtab { flex-shrink:0; padding:6px 14px; border-radius:var(--radius-full); font-size:.8rem; font-weight:600; border:1.5px solid var(--border); background:var(--bg); color:var(--text-secondary); cursor:pointer; transition:var(--transition); }
+    .vtab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .vault-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:12px 16px; }
+    .vault-stat { background:var(--surface); border-radius:var(--radius-lg); padding:14px 10px; text-align:center; }
+    .vault-stat-val { font-size:1.3rem; font-weight:800; color:var(--primary); }
+    .vault-stat-lbl { font-size:.72rem; color:var(--text-secondary); font-weight:500; margin-top:2px; }
+    .vault-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 16px 16px; }
+    .vault-card { background:var(--bg); border-radius:var(--radius-lg); border:1.5px solid var(--border); overflow:hidden; position:relative; transition:var(--transition); }
+    .vault-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+    .vault-card.equipped::after { content:'EQUIPPED'; position:absolute; top:8px; left:8px; background:var(--secondary); color:#fff; padding:2px 8px; border-radius:var(--radius-full); font-size:.6rem; font-weight:800; }
+    .vault-img { width:100%; aspect-ratio:1; background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:3rem; }
+    .vault-info { padding:10px; }
+    .vault-name { font-size:.85rem; font-weight:700; color:var(--text-primary); margin-bottom:2px; }
+    .vault-type { font-size:.72rem; color:var(--text-secondary); text-transform:capitalize; }
+    .vault-actions { display:flex; gap:6px; margin-top:8px; }
+    .coin-wallet { margin:0 16px 12px; background:linear-gradient(135deg,var(--warning),#D97706); border-radius:var(--radius-xl); padding:18px; color:#fff; }
+    .coin-amount { font-size:2.5rem; font-weight:900; display:flex; align-items:center; gap:8px; }
+    .coin-sub { font-size:.8rem; opacity:.8; margin-top:4px; }
+    .rewards-list { padding:0 16px; display:flex; flex-direction:column; gap:10px; }
+    .reward-card { background:var(--surface); border-radius:var(--radius-lg); padding:14px; display:flex; align-items:center; gap:12px; border:1.5px solid var(--border); }
+    .reward-icon { width:44px; height:44px; border-radius:var(--radius-md); background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+    .reward-name { font-weight:700; font-size:.9rem; color:var(--text-primary); }
+    .reward-date { font-size:.75rem; color:var(--text-secondary); margin-top:2px; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="page-title">🗝️ Vault</span>
+  </div>
+
+  <main class="page-content fade-in">
+    <!-- Stats row -->
+    <div class="vault-stats">
+      <div class="vault-stat">
+        <div class="vault-stat-val">12</div>
+        <div class="vault-stat-lbl">Items</div>
+      </div>
+      <div class="vault-stat">
+        <div class="vault-stat-val">5</div>
+        <div class="vault-stat-lbl">Rewards</div>
+      </div>
+      <div class="vault-stat">
+        <div class="vault-stat-val">2,450</div>
+        <div class="vault-stat-lbl">🪙 Coins</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="vault-tabs" id="vaultTabs">
+      <button class="vtab active" onclick="switchVaultTab('items',this)">My Items</button>
+      <button class="vtab" onclick="switchVaultTab('coins',this)">Coins</button>
+      <button class="vtab" onclick="switchVaultTab('rewards',this)">Rewards</button>
+    </div>
+
+    <!-- Items tab -->
+    <div id="tab-items">
+      <div class="vault-grid" id="vaultGrid"></div>
+    </div>
+
+    <!-- Coins tab -->
+    <div id="tab-coins" style="display:none; padding:16px;">
+      <div class="coin-wallet">
+        <div class="coin-amount">🪙 2,450</div>
+        <div class="coin-sub">Total balance</div>
+      </div>
+      <div style="margin-top:16px; display:flex; flex-direction:column; gap:10px;">
+        <div style="background:var(--surface); border-radius:var(--radius-lg); padding:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div><div style="font-weight:700;font-size:.9rem;">Match Win Bonus</div><div style="font-size:.75rem;color:var(--text-secondary);">Today, 3:20 PM</div></div>
+          <span style="color:var(--secondary);font-weight:800;">+50 🪙</span>
+        </div>
+        <div style="background:var(--surface); border-radius:var(--radius-lg); padding:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div><div style="font-weight:700;font-size:.9rem;">Daily Reward</div><div style="font-size:.75rem;color:var(--text-secondary);">Today, 10:05 AM</div></div>
+          <span style="color:var(--secondary);font-weight:800;">+100 🪙</span>
+        </div>
+        <div style="background:var(--surface); border-radius:var(--radius-lg); padding:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div><div style="font-weight:700;font-size:.9rem;">Shop Purchase</div><div style="font-size:.75rem;color:var(--text-secondary);">Yesterday</div></div>
+          <span style="color:var(--danger);font-weight:800;">-200 🪙</span>
+        </div>
+        <div style="background:var(--surface); border-radius:var(--radius-lg); padding:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div><div style="font-weight:700;font-size:.9rem;">Top-Up (500 pack)</div><div style="font-size:.75rem;color:var(--text-secondary);">2 days ago</div></div>
+          <span style="color:var(--secondary);font-weight:800;">+500 🪙</span>
+        </div>
+      </div>
+      <a href="topup.html" class="btn-primary" style="display:block;text-align:center;margin-top:16px;text-decoration:none;padding:13px;">+ Add More Coins</a>
+    </div>
+
+    <!-- Rewards tab -->
+    <div id="tab-rewards" style="display:none;">
+      <div class="rewards-list">
+        <div class="reward-card">
+          <div class="reward-icon">🏆</div>
+          <div style="flex:1;">
+            <div class="reward-name">Ranked Season Reward</div>
+            <div class="reward-date">Gold Rank Badge — Feb 2026</div>
+          </div>
+          <span style="background:var(--secondary-light);color:var(--secondary);padding:4px 10px;border-radius:var(--radius-full);font-size:.72rem;font-weight:700;">Claimed</span>
+        </div>
+        <div class="reward-card">
+          <div class="reward-icon">🎁</div>
+          <div style="flex:1;">
+            <div class="reward-name">Weekly Challenge Box</div>
+            <div class="reward-date">Win 10 matches — Feb 2026</div>
+          </div>
+          <button class="btn-primary" style="padding:5px 14px;font-size:.75rem;border-radius:var(--radius-full);" onclick="showToast('Reward claimed!','success')">Claim</button>
+        </div>
+        <div class="reward-card">
+          <div class="reward-icon">⭐</div>
+          <div style="flex:1;">
+            <div class="reward-name">First Win Bonus</div>
+            <div class="reward-date">+100 coins — Jan 2026</div>
+          </div>
+          <span style="background:var(--secondary-light);color:var(--secondary);padding:4px 10px;border-radius:var(--radius-full);font-size:.72rem;font-weight:700;">Claimed</span>
+        </div>
+        <div class="reward-card">
+          <div class="reward-icon">🎖️</div>
+          <div style="flex:1;">
+            <div class="reward-name">Achievement Bonus</div>
+            <div class="reward-date">Master tactician — Jan 2026</div>
+          </div>
+          <button class="btn-primary" style="padding:5px 14px;font-size:.75rem;border-radius:var(--radius-full);" onclick="showToast('Reward claimed!','success')">Claim</button>
+        </div>
+        <div class="reward-card">
+          <div class="reward-icon">🎄</div>
+          <div style="flex:1;">
+            <div class="reward-name">Holiday Pack</div>
+            <div class="reward-date">Winter Event 2025</div>
+          </div>
+          <span style="background:var(--secondary-light);color:var(--secondary);padding:4px 10px;border-radius:var(--radius-full);font-size:.72rem;font-weight:700;">Claimed</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="nav-slot"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const OWNED_ITEMS = [
+  { id:2, name:'Ice Queen', type:'avatar', emoji:'👸', rarity:'epic', equipped:true },
+  { id:4, name:'Pixel Bot', type:'avatar', emoji:'🤖', rarity:'common', equipped:false },
+  { id:7, name:'Neon Frame', type:'frame', emoji:'💜', rarity:'rare', equipped:true },
+  { id:8, name:'Classic Frame', type:'frame', emoji:'⬜', rarity:'common', equipped:false },
+  { id:11, name:'Galaxy Board', type:'skin', emoji:'🌌', rarity:'epic', equipped:true },
+  { id:12, name:'Wooden Board', type:'skin', emoji:'🪵', rarity:'common', equipped:false },
+  { id:16, name:'Bubble Float', type:'effect', emoji:'🫧', rarity:'common', equipped:false },
+];
+
+function renderVaultItems() {
+  document.getElementById('vaultGrid').innerHTML = OWNED_ITEMS.map(item => `
+    <div class="vault-card${item.equipped?' equipped':''}">
+      <div class="vault-img">${item.emoji}</div>
+      <div class="vault-info">
+        <div class="vault-name">${item.name}</div>
+        <div class="vault-type">${item.type}</div>
+        <div class="vault-actions">
+          ${item.equipped
+            ? `<button class="btn-equip" style="flex:1;padding:5px 0;font-size:.75rem;border-radius:var(--radius-full);background:var(--surface-2);color:var(--text-secondary);border:none;cursor:default;">Equipped</button>`
+            : `<button class="btn-equip" style="flex:1;padding:5px 0;font-size:.75rem;border-radius:var(--radius-full);background:var(--secondary);color:#fff;border:none;cursor:pointer;" onclick="equipItem(${item.id})">Equip</button>`
+          }
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function equipItem(id) {
+  const item = OWNED_ITEMS.find(i => i.id === id);
+  if (!item) return;
+  OWNED_ITEMS.forEach(i => { if (i.type === item.type) i.equipped = false; });
+  item.equipped = true;
+  renderVaultItems();
+  showToast(`${item.name} equipped!`, 'success');
+}
+
+function switchVaultTab(tab, el) {
+  document.querySelectorAll('.vtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-items').style.display = 'none';
+  document.getElementById('tab-coins').style.display = 'none';
+  document.getElementById('tab-rewards').style.display = 'none';
+  document.getElementById('tab-' + tab).style.display = 'block';
+}
+
+renderVaultItems();
+setActiveNav('');
+</script>
+</body>
+</html>

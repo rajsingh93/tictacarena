@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — About</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .about-hero { background:linear-gradient(135deg,#111827,#1F2937);padding:48px 24px 36px;color:#fff;text-align:center; }
+    .about-hero-icon { font-size:3.5rem;margin-bottom:12px; }
+    .about-hero h1 { font-size:1.8rem;font-weight:900;margin-bottom:8px; }
+    .about-hero p { font-size:.9rem;opacity:.75;max-width:280px;margin:0 auto; }
+    .about-body { padding:24px; }
+    .mission-card { background:linear-gradient(135deg,var(--primary-light),#F5F3FF);border:1px solid #DDD6FE;border-radius:var(--radius-xl);padding:20px;margin-bottom:20px;text-align:center; }
+    .team-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px; }
+    .team-card { background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center; }
+    .team-avatar { width:52px;height:52px;border-radius:50%;background:var(--primary);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem; }
+    .stat-strip { display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:20px;background:#fff; }
+    .strip-item { text-align:center;padding:16px 8px;border-right:1px solid var(--border); }
+    .strip-item:last-child { border-right:none; }
+    .strip-val { font-size:1.4rem;font-weight:900;color:var(--primary); }
+    .strip-lbl { font-size:.68rem;color:var(--text-secondary);margin-top:2px; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="about-hero">
+      <div onclick="history.back()" style="cursor:pointer;margin-bottom:16px;opacity:.7;font-size:.85rem;">← Back</div>
+      <div class="about-hero-icon">♟️</div>
+      <h1>About TicTacArena</h1>
+      <p>Where strategy meets competition</p>
+    </div>
+
+    <div class="about-body">
+      <!-- Mission -->
+      <div class="mission-card">
+        <div style="font-size:2rem;margin-bottom:8px;">🎯</div>
+        <h2 style="font-weight:800;font-size:1.05rem;margin-bottom:6px;">Our Mission</h2>
+        <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.6;">
+          To create the world's most competitive and fun Tic-Tac-Toe experience — connecting millions of players globally through strategy, skill, and community.
+        </p>
+      </div>
+
+      <!-- Stats Strip -->
+      <div class="stat-strip">
+        <div class="strip-item"><div class="strip-val">48K+</div><div class="strip-lbl">Players</div></div>
+        <div class="strip-item"><div class="strip-val">312K</div><div class="strip-lbl">Games Played</div></div>
+        <div class="strip-item"><div class="strip-val">150+</div><div class="strip-lbl">Countries</div></div>
+      </div>
+
+      <!-- Story -->
+      <div style="margin-bottom:20px;">
+        <h3 style="font-weight:800;font-size:1rem;margin-bottom:10px;">Our Story</h3>
+        <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.7;margin-bottom:10px;">
+          TicTacArena was founded in 2025 by a group of passionate game developers who believed that even the simplest games can be elevated into deep competitive experiences.
+        </p>
+        <p style="font-size:.85rem;color:var(--text-secondary);line-height:1.7;">
+          What started as a weekend project quickly grew into a global platform. Today, thousands of players battle daily in ranked matches, tournaments, and friend challenges — proving that great gameplay transcends complexity.
+        </p>
+      </div>
+
+      <!-- Team -->
+      <h3 style="font-weight:800;font-size:1rem;margin-bottom:12px;">Core Team</h3>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">👨‍💻</div>
+          <div style="font-weight:700;font-size:.85rem;">Raj Singh</div>
+          <div style="font-size:.72rem;color:var(--text-secondary);">Co-Founder & CEO</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#10B981;">👩‍🎨</div>
+          <div style="font-weight:700;font-size:.85rem;">Raj Singh</div>
+          <div style="font-size:.72rem;color:var(--text-secondary);">Design Lead</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#F59E0B;">🧑‍🔧</div>
+          <div style="font-weight:700;font-size:.85rem;">Raj Singh</div>
+          <div style="font-size:.72rem;color:var(--text-secondary);">Backend Engineer</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#EF4444;">👩‍💼</div>
+          <div style="font-weight:700;font-size:.85rem;">Raj Singh</div>
+          <div style="font-size:.72rem;color:var(--text-secondary);">Community Manager</div>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="contact.html" class="list-item" style="text-decoration:none;">
+          <span>📧</span><span>Contact Us</span><span style="margin-left:auto;color:var(--text-tertiary);">›</span>
+        </a>
+        <a href="faq.html" class="list-item" style="text-decoration:none;">
+          <span>❓</span><span>FAQ</span><span style="margin-left:auto;color:var(--text-tertiary);">›</span>
+        </a>
+        <a href="terms.html" class="list-item" style="text-decoration:none;">
+          <span>📄</span><span>Terms of Service</span><span style="margin-left:auto;color:var(--text-tertiary);">›</span>
+        </a>
+        <a href="privacy.html" class="list-item" style="text-decoration:none;">
+          <span>🔒</span><span>Privacy Policy</span><span style="margin-left:auto;color:var(--text-tertiary);">›</span>
+        </a>
+      </div>
+    </div>
+
+    <div id="nav-slot"></div>
+  </div>
+  <script src="app.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => setActiveNav(''));</script>
+</body>
+</html>

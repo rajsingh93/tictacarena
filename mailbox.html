@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>TicTacArena — Mailbox</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .mail-list { padding:0 16px; display:flex; flex-direction:column; gap:10px; }
+    .mail-card { background:var(--bg); border:1.5px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; transition:var(--transition); }
+    .mail-card.unread { border-color:rgba(124,58,237,.3); background:var(--primary-light); }
+    .mail-header { display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer; }
+    .mail-icon { width:42px; height:42px; border-radius:var(--radius-md); background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+    .mail-icon.reward { background:var(--warning-light); }
+    .mail-icon.system { background:var(--surface-2); }
+    .mail-icon.event { background:var(--secondary-light); }
+    .mail-subject { font-weight:700; font-size:.85rem; color:var(--text-primary); }
+    .mail-from { font-size:.72rem; color:var(--text-secondary); margin-top:2px; }
+    .mail-date { font-size:.7rem; color:var(--text-tertiary); margin-left:auto; flex-shrink:0; }
+    .unread-dot { width:8px; height:8px; border-radius:50%; background:var(--primary); margin-right:2px; flex-shrink:0; }
+    .mail-body { padding:0 14px 14px; display:none; border-top:1px solid var(--border-light); }
+    .mail-body.open { display:block; }
+    .mail-msg { font-size:.82rem; color:var(--text-secondary); line-height:1.6; padding:10px 0; }
+    .mail-actions { display:flex; gap:8px; }
+    .claim-btn { flex:1; padding:8px; border-radius:var(--radius-lg); background:var(--primary); color:#fff; font-weight:700; font-size:.82rem; border:none; cursor:pointer; transition:var(--transition); }
+    .claim-btn:hover { background:var(--primary-dark); }
+    .claim-btn:disabled { background:var(--secondary); cursor:default; }
+    .delete-btn { padding:8px 14px; border-radius:var(--radius-lg); background:var(--danger-light); color:var(--danger); font-weight:700; font-size:.82rem; border:none; cursor:pointer; transition:var(--transition); }
+    .delete-btn:hover { background:var(--danger); color:#fff; }
+    .reward-preview { display:flex; align-items:center; gap:8px; background:var(--surface); border-radius:var(--radius-md); padding:10px; margin:8px 0; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="page-title">📬 Mailbox</span>
+    <span style="margin-left:auto;background:var(--primary);color:#fff;padding:2px 8px;border-radius:var(--radius-full);font-size:.72rem;font-weight:700;" id="unreadCount">3 new</span>
+  </div>
+
+  <main class="page-content fade-in">
+    <div style="padding:8px 16px 4px;font-size:.8rem;color:var(--text-secondary);">Tap a mail to read & claim rewards</div>
+    <div class="mail-list" id="mailList"></div>
+  </main>
+
+  <div id="nav-slot"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script>
+const MAILS = [
+  { id:1, type:'reward', icon:'🎁', subject:'Season 5 Launch Reward', from:'TicTacArena System', date:'Today', unread:true, claimed:false,
+    msg:'🎉 Welcome to Season 5! As a valued player, we are sending you a special launch reward. Enjoy the new ranked season and compete for the ultimate championship title!',
+    reward:{ label:'500 Coins + Gold Frame', emoji:'🪙' }
+  },
+  { id:2, type:'event', icon:'🏆', subject:'Weekend Tournament Invite', from:'Events Team', date:'Today', unread:true, claimed:false,
+    msg:'⚔️ The Weekend Blitz Tournament starts Saturday! Top 3 players win exclusive Legendary items. Register before Friday midnight to secure your spot!',
+    reward:{ label:'Entry Token', emoji:'🎟️' }
+  },
+  { id:3, type:'system', icon:'📢', subject:'Terms of Service Update', from:'Admin Team', date:'Yesterday', unread:true, claimed:false,
+    msg:'We have updated our Terms of Service effective March 1, 2026. Please review the changes at your earliest convenience. Key updates include fair play policies and improved privacy controls.',
+    reward:null
+  },
+  { id:4, type:'reward', icon:'🎖️', subject:'Achievement Milestone Reward', from:'TicTacArena System', date:'3 days ago', unread:false, claimed:true,
+    msg:'Congratulations! You reached 100 total wins. This is a huge milestone and we are rewarding your dedication with an exclusive item!',
+    reward:{ label:'Galaxy Board Skin', emoji:'🌌' }
+  },
+  { id:5, type:'system', icon:'🛠️', subject:'Maintenance Notice', from:'Tech Team', date:'5 days ago', unread:false, claimed:false,
+    msg:'Scheduled maintenance was completed successfully on Feb 23, 2026. All services are back online. Thank you for your patience!',
+    reward:{ label:'100 Coins (Compensation)', emoji:'🪙' }
+  },
+  { id:6, type:'event', icon:'💝', subject:'Valentine\'s Event Recap', from:'Events Team', date:'1 week ago', unread:false, claimed:true,
+    msg:'Thank you for participating in the Valentine\'s Special Event! We hope you enjoyed the exclusive heart-themed board skins and emotes. See you at the next event!',
+    reward:null
+  },
+];
+
+function renderMails() {
+  const unread = MAILS.filter(m => m.unread).length;
+  document.getElementById('unreadCount').textContent = unread ? `${unread} new` : 'All read';
+  document.getElementById('mailList').innerHTML = MAILS.map(m => `
+    <div class="mail-card${m.unread?' unread':''}" id="mail-${m.id}">
+      <div class="mail-header" onclick="toggleMail(${m.id})">
+        ${m.unread ? '<div class="unread-dot"></div>' : ''}
+        <div class="mail-icon ${m.type}">${m.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="mail-subject">${m.subject}</div>
+          <div class="mail-from">From: ${m.from}</div>
+        </div>
+        <div class="mail-date">${m.date}</div>
+      </div>
+      <div class="mail-body" id="mailbody-${m.id}">
+        <div class="mail-msg">${m.msg}</div>
+        ${m.reward ? `
+          <div class="reward-preview">
+            <span style="font-size:1.5rem">${m.reward.emoji}</span>
+            <div>
+              <div style="font-weight:700;font-size:.82rem">${m.reward.label}</div>
+              <div style="font-size:.72rem;color:var(--text-secondary)">Reward attached</div>
+            </div>
+          </div>
+        ` : ''}
+        <div class="mail-actions">
+          ${m.reward ? `
+            <button class="claim-btn" ${m.claimed ? 'disabled' : `onclick="claimMail(${m.id})"`}>
+              ${m.claimed ? '✅ Claimed' : '🎁 Claim Reward'}
+            </button>
+          ` : ''}
+          <button class="delete-btn" onclick="deleteMail(${m.id})">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleMail(id) {
+  const body = document.getElementById('mailbody-' + id);
+  const mail = MAILS.find(m => m.id === id);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.mail-body').forEach(b => b.classList.remove('open'));
+  if (!isOpen) { body.classList.add('open'); if (mail) mail.unread = false; }
+  renderMails();
+  if (!isOpen) { setTimeout(() => { const b2 = document.getElementById('mailbody-' + id); if (b2) b2.classList.add('open'); }, 10); }
+}
+
+function claimMail(id) {
+  const m = MAILS.find(x => x.id === id);
+  if (!m || m.claimed) return;
+  m.claimed = true;
+  showToast(`${m.reward.label} claimed! 🎉`, 'success');
+  renderMails();
+}
+
+function deleteMail(id) {
+  const idx = MAILS.findIndex(x => x.id === id);
+  if (idx > -1) { MAILS.splice(idx, 1); renderMails(); showToast('Mail deleted'); }
+}
+
+renderMails();
+setActiveNav('');
+</script>
+</body>
+</html>
