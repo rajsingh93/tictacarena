@@ -23,7 +23,7 @@ The goal of this project is to demonstrate design, architecture, and user experi
 
 🏠 Home
 
-"Home" (docs/home.jpeg)
+![Home] (docs/home.jpeg)
 
 🎮 Match
 
