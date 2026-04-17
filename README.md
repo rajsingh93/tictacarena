@@ -27,39 +27,39 @@ The goal of this project is to demonstrate design, architecture, and user experi
 
 🎮 Match
 
-"Match" (docs/match.jpeg)
+![Match](docs/match.jpeg)
 
 🏆 Leaderboard
 
-"Leaderboard" (docs/leaderboard.jpeg)
+![leaderboard](docs/leaderboard.jpeg)
 
 👤 Profile
 
-"Profile" (docs/profile.jpeg)
+![Profile](docs/profile.jpeg)
 
 💬 World Chat
 
-"World Chat" (docs/worldchat.jpeg)
+![World chat](docs/worldchat.jpeg)
 
 🔔 Notifications
 
-"Notifications" (docs/notifications.jpeg)
+![Notifications](docs/notifications.jpeg)
 
 🛒 Shop
 
-"Shop" (docs/shop.jpeg)
+![Shop](docs/shop.jpeg)
 
 ⚙️ Settings
 
-"Settings" (docs/settings.jpeg)
+![Settings](docs/settings.jpeg)
 
 📜 Match History
 
-"History" (docs/history.jpeg)
+![History](docs/history.jpeg)
 
 📦 Vault
 
-"Vault" (docs/vault.jpeg)
+![Vault](docs/vault.jpeg)
 ---
 
 🚀 Core Features
