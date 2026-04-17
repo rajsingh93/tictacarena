@@ -17,50 +17,6 @@ All features such as multiplayer, matchmaking, chat, ranking, and real-time syst
 
 The goal of this project is to demonstrate design, architecture, and user experience flow of a full-scale application.
 
----
-
-📸 Screenshots
-
-🏠 Home
-
-![Home](docs/home.jpeg)
-
-🎮 Match
-
-![Match](docs/match.jpeg)
-
-🏆 Leaderboard
-
-![leaderboard](docs/leaderboard.jpeg)
-
-👤 Profile
-
-![Profile](docs/profile.jpeg)
-
-💬 World Chat
-
-![World chat](docs/worldchat.jpeg)
-
-🔔 Notifications
-
-![Notifications](docs/notifications.jpeg)
-
-🛒 Shop
-
-![Shop](docs/shop.jpeg)
-
-⚙️ Settings
-
-![Settings](docs/settings.jpeg)
-
-📜 Match History
-
-![History](docs/history.jpeg)
-
-📦 Vault
-
-![Vault](docs/vault.jpeg)
----
 
 🚀 Core Features
 
