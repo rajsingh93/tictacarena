@@ -57,7 +57,7 @@ The goal of this project is to demonstrate design, architecture, and user experi
 
 "History" (docs/history.jpeg)
 
-📦 Vault / Inventory
+📦 Vault
 
 "Vault" (docs/vault.jpeg)
 ---
